@@ -453,7 +453,7 @@ No se inventan requisitos. Si surge una decisión funcional nueva, primero se pr
 - Estado: `[ ACTIVE ]` (2026-09-29, America/Guayaquil). Dependencia `GB-014.06` verificada como `[ RESOLVED ]` antes del inicio.
 - Se creó la rama `feature/014-11/github-pages-architecture` desde `main`. El alcance se limita a publicar estáticamente los HTML existentes en `architecture/`, actualizar los enlaces localizados de ambos README y documentar la automatización.
 - El workflow `.github/workflows/architecture-pages.yml` usa `workflow_dispatch` y pushes a `main`, publica `architecture/` mediante las acciones oficiales de Pages y no ejecuta código de aplicación ni usa secretos.
-- El PR hacia `main` y la verificación de Pages quedan pendientes de registrar tras su creación. GB-014.11 permanece `[ ACTIVE ]` hasta que el autor fusione el PR y se comprueben el workflow, las URLs EN/ES y el contenido público con HTTP 200.
+- PR de implementación: [GameBook.System #1](https://github.com/CarlosSV923/GameBook.System/pull/1), `feature/014-11/github-pages-architecture` → `main`, permanece `OPEN` con commit `4e4100b9723426885c5f789c3038136dfe00e316`. GitHub Pages quedó habilitado en modo `workflow` con URL base `https://carlossv923.github.io/GameBook.System/`; no se reportaron checks automáticos para esta rama documental. GB-014.11 permanece `[ ACTIVE ]` hasta que el autor fusione el PR y se comprueben el workflow, las URLs EN/ES y el contenido público con HTTP 200.
 
 ## 6. Criterio de traspaso entre herramientas
 
