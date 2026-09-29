@@ -372,7 +372,7 @@ No se inventan requisitos. Si surge una decisión funcional nueva, primero se pr
 | [ RESOLVED ] **GB-014.09** — Ajustar navegación documental, nombres Archify y overview bilingüe | GB-014.05 | README sin enlaces de fuente/recibo ni idioma redundante; cada README abre solo su HTML; artefactos `architecture/` nombrados `GameBook.System-*`; overview con sección Release Please y arquitectura localizada. |
 | [ RESOLVED ] **GB-014.10** — Unificar documentación general en README | GB-014.09 | README EN/ES conserva la información importante de overview sin duplicarla, `docs/` se elimina, no quedan enlaces/referencias rotos y el inventario refleja una única documentación por idioma. |
 | [ RESOLVED ] **GB-014.06** — Crear/publicar GameBook.System | GB-014.05 | `gh` crea repo público **solo con `main`** y sube un único commit inicial con todo listo; URL y contenido público verificados. |
-| [ ACTIVE ] **GB-014.11** — Publicar diagramas de arquitectura con GitHub Pages | GB-014.06 | Añadir un workflow de GitHub Actions que publique los HTML de `architecture/` en GitHub Pages, reemplazar en cada README el enlace local por la URL Pages de su idioma, actualizar la documentación SDD y abrir un PR desde una rama basada en `main`; verificar workflow, URLs y contenido tras la integración. |
+| [ RESOLVED ] **GB-014.11** — Publicar diagramas de arquitectura con GitHub Pages | GB-014.06 | Añadir un workflow de GitHub Actions que publique los HTML de `architecture/` en GitHub Pages, reemplazar en cada README el enlace local por la URL Pages de su idioma, actualizar la documentación SDD y abrir un PR desde una rama basada en `main`; verificar workflow, URLs y contenido tras la integración. |
 | [ NEW ] **GB-014.07** — Enlazar documentación desde aplicaciones | GB-014.06 | `README.md` y `README.es.md` de AuthUser, Game y Frontend enlazan `GameBook.System` mediante el flujo normal de PR de cada aplicación. |
 | [ NEW ] **GB-014.08** — Comprobar entrega documental | GB-014.07 | Cuatro repos públicos accesibles, README principal de cada uno en inglés, versiones españolas completas, enlaces bidireccionales y diagramas EN/ES abiertos; sin publicaciones adicionales en `GameBook.System`. |
 
@@ -448,12 +448,14 @@ No se inventan requisitos. Si surge una decisión funcional nueva, primero se pr
 - El repositorio se creó mediante `gh repo create` desde este staging y conserva un único commit inicial; no se crearon `develop`, PR, releases ni publicaciones adicionales en `GameBook.System`.
 - La validación pública comprobó la URL del repositorio, la visibilidad pública, la rama predeterminada `main`, la existencia de los dos README, los HTML de arquitectura EN/ES y los recibos de inventario. La validación local conserva 48 archivos, 27 Markdown, `docs/` ausente, inventario completo, `0` enlaces relativos rotos y `0` JSON inválidos.
 
-#### GB-014.11 — Evidencia de ejecución
+#### GB-014.11 — Evidencia de cierre
 
-- Estado: `[ ACTIVE ]` (2026-09-29, America/Guayaquil). Dependencia `GB-014.06` verificada como `[ RESOLVED ]` antes del inicio.
+- Estado: `[ RESOLVED ]` (2026-09-29, America/Guayaquil). Dependencia `GB-014.06` verificada como `[ RESOLVED ]` antes del inicio.
 - Se creó la rama `feature/014-11/github-pages-architecture` desde `main`. El alcance se limita a publicar estáticamente los HTML existentes en `architecture/`, actualizar los enlaces localizados de ambos README y documentar la automatización.
 - El workflow `.github/workflows/architecture-pages.yml` usa `workflow_dispatch` y pushes a `main`, publica `architecture/` mediante las acciones oficiales de Pages y no ejecuta código de aplicación ni usa secretos.
-- El PR hacia `main` y la verificación de Pages quedan pendientes de registrar tras su creación. GB-014.11 permanece `[ ACTIVE ]` hasta que el autor fusione el PR y se comprueben el workflow, las URLs EN/ES y el contenido público con HTTP 200.
+- PR de implementación: [GameBook.System #1](https://github.com/CarlosSV923/GameBook.System/pull/1), `feature/014-11/github-pages-architecture` → `main`, fusionado con merge `6ad2dc1a6949c135a5d4adace390f3c7bd8b6ae2`. GitHub Pages quedó habilitado en modo `workflow` con URL base `https://carlossv923.github.io/GameBook.System/`.
+- Validación remota: el workflow `Deploy architecture diagrams to GitHub Pages` terminó `success` en el run [36519319633](https://github.com/CarlosSV923/GameBook.System/actions/runs/36519319633) sobre `main`. `https://carlossv923.github.io/GameBook.System/GameBook.System-architecture-en.html` y `https://carlossv923.github.io/GameBook.System/GameBook.System-architecture-es.html` respondieron HTTP `200`, con contenido de sus respectivos idiomas.
+- La subtarea queda `[ RESOLVED ]`; el commit de seguimiento registra esta evidencia en `main` sin cambiar el alcance del workflow.
 
 ## 6. Criterio de traspaso entre herramientas
 
