@@ -22,7 +22,7 @@ Los servicios comparten un despliegue de PostgreSQL, pero utilizan esquemas de b
 
 El artefacto Archify validado en español para la topología final de las aplicaciones se conserva en [`architecture/`](architecture/):
 
-- [Diagrama de arquitectura](architecture/GameBook.System-architecture-es.html)
+- [Diagrama de arquitectura](https://carlossv923.github.io/GameBook.System/GameBook.System-architecture-es.html)
 
 ![Arquitectura oscura del sistema GameBook](architecture/GameBook.System-architecture-es.visual-check.1440x900.dark.png)
 
