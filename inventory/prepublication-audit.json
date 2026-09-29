@@ -1,0 +1,71 @@
+{
+  "task": "GB-014.10",
+  "status": "passed",
+  "stagingRoot": "GameBook.System",
+  "checkedAt": "2026-09-29",
+  "scope": {
+    "markdownFiles": 27,
+    "expectedApplicationRepositories": [
+      "GameBook.Frontend",
+      "GameBook.Microservice.AuthUser",
+      "GameBook.Microservice.Game"
+    ],
+    "generalDocumentationPairs": [["README.md", "README.es.md"]],
+    "preservedSpanishTraceability": [
+      "AGENTS.md",
+      "CLAUDE.md",
+      "specs/",
+      "plan/",
+      "tasks/",
+      "contracts/",
+      "environments/"
+    ]
+  },
+  "checks": {
+    "relativeMarkdownLinks": {
+      "status": "passed",
+      "broken": 0
+    },
+    "externalMarkdownLinks": {
+      "status": "passed",
+      "uniqueLinks": 177,
+      "httpFailures": 0,
+      "method": "HTTP HEAD with redirects enabled"
+    },
+    "secrets": {
+      "status": "passed",
+      "privateKeys": 0,
+      "databaseConnectionStrings": 0,
+      "jwtValues": 0,
+      "credentialExamplesRedactedInStaging": true
+    },
+    "repositoryNames": {
+      "status": "passed",
+      "unexpectedNames": []
+    },
+    "temporalInstructions": {
+      "status": "passed",
+      "filesUpdated": ["AGENTS.md", "CLAUDE.md"],
+      "localSkillLinksRemoved": true,
+      "sddHistoryIdentified": true
+    },
+    "documentationUnification": {
+      "status": "passed",
+      "canonicalGeneralFiles": ["README.md", "README.es.md"],
+      "removedDirectory": "docs/",
+      "duplicatedOverviewFilesRemoved": 2
+    },
+    "unexpectedArtifacts": {
+      "status": "passed",
+      "applicationRepositories": 0,
+      "secretsDirectories": 0,
+      "dependencyOrCacheDirectories": 0
+    }
+  },
+  "excludedFromThisTask": [
+    "Remote repository creation",
+    "GitHub Pages configuration",
+    "Initial publication",
+    "Application README back-links"
+  ]
+}

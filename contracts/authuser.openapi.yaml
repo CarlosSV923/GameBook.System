@@ -1,0 +1,452 @@
+openapi: 3.0.3
+info:
+  title: GameBook AuthUser API
+  version: 0.1.0
+  description: |
+    Contrato HTTP JSON de AuthUser incluido en la línea base GB-002.
+    Expone registro, inicio de sesión, consulta de sesión vigente, cambio de
+    contraseña y desactivación lógica de la cuenta. No incluye secretos reales;
+    la identidad de claims, claves y revocación se detalla en jwt-revocation.md.
+servers:
+  - url: http://localhost:3001
+    description: Desarrollo local (puerto previsto; puede configurarse por entorno)
+tags:
+  - name: Authentication
+    description: Registro, credenciales y sesión vigente
+  - name: User
+    description: Operaciones protegidas sobre la cuenta autenticada
+paths:
+  /v1/auth/register:
+    post:
+      tags: [Authentication]
+      operationId: registerUser
+      summary: Crear una cuenta
+      description: |
+        Crea una cuenta con correo normalizado y no inicia sesión de forma
+        automática. La contraseña nunca se devuelve. Un correo ya registrado
+        produce un conflicto; si pertenece a una cuenta deshabilitada se
+        devuelve ACCOUNT_DISABLED sin reactivarla ni duplicarla.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+            examples:
+              valid:
+                summary: Registro ficticio válido
+                value:
+                  fullName: Ada Lovelace
+                  email: ada.lovelace@example.test
+                  password: '<example-password>'
+                  passwordConfirmation: '<example-password>'
+      responses:
+        '201':
+          description: Cuenta creada; el cliente debe dirigir a inicio de sesión
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+              examples:
+                created:
+                  value:
+                    user:
+                      id: 7b7f3d2e-6d8d-4e8c-9e0c-2a96f2fb11aa
+                      fullName: Ada Lovelace
+                      email: ada.lovelace@example.test
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '409':
+          description: El correo ya está registrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                duplicateEmail:
+                  value:
+                    code: EMAIL_ALREADY_REGISTERED
+                    message: The email address is already registered.
+                    requestId: req_gb001_fictitious
+                disabledEmail:
+                  value:
+                    code: ACCOUNT_DISABLED
+                    message: The account is disabled. Use another email or create a new account.
+                    requestId: req_gb001_disabled_fictitious
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /v1/auth/login:
+    post:
+      tags: [Authentication]
+      operationId: loginUser
+      summary: Iniciar sesión
+      description: |
+        Valida correo y contraseña y devuelve un JWT de una hora. Los errores
+        de credenciales son genéricos, salvo una cuenta conocida como
+        deshabilitada, que devuelve ACCOUNT_DISABLED sin emitir un JWT.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            examples:
+              valid:
+                summary: Credenciales ficticias
+                value:
+                  email: ada.lovelace@example.test
+                  password: '<example-password>'
+      responses:
+        '200':
+          description: Credenciales válidas y token emitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+              examples:
+                loggedIn:
+                  value:
+                    accessToken: '<example-jwt-token>'
+                    tokenType: Bearer
+                    expiresIn: 3600
+                    user:
+                      id: 7b7f3d2e-6d8d-4e8c-9e0c-2a96f2fb11aa
+                      fullName: Ada Lovelace
+                      email: ada.lovelace@example.test
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          description: Credenciales inválidas (respuesta genérica)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidCredentials:
+                  value:
+                    code: INVALID_CREDENTIALS
+                    message: Invalid email or password.
+                    requestId: req_gb002_fictitious
+        '403':
+          description: La cuenta asociada al correo está deshabilitada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                disabledAccount:
+                  value:
+                    code: ACCOUNT_DISABLED
+                    message: The account is disabled. Use another email or create a new account.
+                    requestId: req_gb002_disabled_fictitious
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /v1/auth/session:
+    get:
+      tags: [Authentication]
+      operationId: getCurrentSession
+      summary: Consultar la sesión vigente
+      description: |
+        Valida el Bearer JWT y la versión de sesión vigente en AuthUser.
+        Game usa esta operación para comprobar revocación antes de una
+        operación protegida. No emite ni renueva tokens.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Sesión vigente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionResponse'
+              examples:
+                active:
+                  value:
+                    user:
+                      id: 7b7f3d2e-6d8d-4e8c-9e0c-2a96f2fb11aa
+                      fullName: Ada Lovelace
+                      email: ada.lovelace@example.test
+        '401':
+          $ref: '#/components/responses/UnauthenticatedError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /v1/users/me/password:
+    patch:
+      tags: [User]
+      operationId: changeMyPassword
+      summary: Cambiar la contraseña de la cuenta autenticada
+      description: |
+        Requiere la contraseña actual y una nueva que cumpla las reglas del
+        MVP. El cambio actualiza el hash y revoca todos los JWT previamente
+        emitidos para la cuenta, incluido el token usado en esta solicitud.
+        El cliente debe retirar el token y solicitar un nuevo inicio de sesión.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+            examples:
+              valid:
+                summary: Cambio ficticio válido
+                value:
+                  currentPassword: '<current-example-password>'
+                  newPassword: '<new-example-password>'
+      responses:
+        '204':
+          description: Contraseña cambiada; no se devuelve cuerpo
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          description: Token ausente, inválido, revocado o contraseña actual incorrecta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidCurrentPassword:
+                  value:
+                    code: INVALID_CREDENTIALS
+                    message: Invalid credentials.
+                    requestId: req_gb003_fictitious
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /v1/users/me:
+    delete:
+      tags: [User]
+      operationId: disableMyAccount
+      summary: Deshabilitar lógicamente la cuenta autenticada
+      description: |
+        Conserva la cuenta y sus favoritos, marca isDisabled como true e
+        incrementa la versión de sesión en una operación atómica. Todos los
+        JWT previamente emitidos quedan invalidados. No existe reactivación ni
+        purga física en el MVP.
+      security:
+        - BearerAuth: []
+      responses:
+        '204':
+          description: Cuenta deshabilitada; no se devuelve cuerpo
+        '401':
+          $ref: '#/components/responses/UnauthenticatedError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT emitido por AuthUser. Nunca incluir un token real en la documentación.
+  schemas:
+    RegisterRequest:
+      type: object
+      additionalProperties: false
+      required: [fullName, email, password, passwordConfirmation]
+      properties:
+        fullName:
+          type: string
+          minLength: 1
+          maxLength: 120
+          description: Nombre completo visible de la persona usuaria.
+          example: Ada Lovelace
+        email:
+          type: string
+          format: email
+          maxLength: 254
+          description: Correo normalizado antes de aplicar unicidad.
+          example: ada.lovelace@example.test
+        password:
+          $ref: '#/components/schemas/Password'
+        passwordConfirmation:
+          type: string
+          minLength: 8
+          description: Debe coincidir exactamente con password.
+          example: 'GameBook@2026'
+    LoginRequest:
+      type: object
+      additionalProperties: false
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+          example: ada.lovelace@example.test
+        password:
+          type: string
+          minLength: 1
+          format: password
+          example: 'GameBook@2026'
+    ChangePasswordRequest:
+      type: object
+      additionalProperties: false
+      required: [currentPassword, newPassword]
+      properties:
+        currentPassword:
+          type: string
+          minLength: 1
+          format: password
+          description: Contraseña vigente; no se registra ni se devuelve.
+          example: 'GameBook@2026'
+        newPassword:
+          $ref: '#/components/schemas/Password'
+    Password:
+      type: string
+      minLength: 8
+      format: password
+      pattern: '^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$'
+      description: Al menos 8 caracteres, una mayúscula, un número y un carácter especial.
+      example: 'GameBook@2026'
+    UserIdentity:
+      type: object
+      additionalProperties: false
+      required: [id, fullName, email]
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 7b7f3d2e-6d8d-4e8c-9e0c-2a96f2fb11aa
+        fullName:
+          type: string
+          example: Ada Lovelace
+        email:
+          type: string
+          format: email
+          example: ada.lovelace@example.test
+    UserResponse:
+      type: object
+      additionalProperties: false
+      required: [user]
+      properties:
+        user:
+          $ref: '#/components/schemas/UserIdentity'
+    SessionResponse:
+      type: object
+      additionalProperties: false
+      required: [user]
+      properties:
+        user:
+          $ref: '#/components/schemas/UserIdentity'
+    LoginResponse:
+      type: object
+      additionalProperties: false
+      required: [accessToken, tokenType, expiresIn, user]
+      properties:
+        accessToken:
+          type: string
+          description: JWT ficticio en ejemplos; el servicio devuelve el token real solo al cliente autenticado.
+          example: '<example-jwt-token>'
+        tokenType:
+          type: string
+          enum: [Bearer]
+          example: Bearer
+        expiresIn:
+          type: integer
+          format: int32
+          enum: [3600]
+          description: Vigencia del JWT en segundos.
+          example: 3600
+        user:
+          $ref: '#/components/schemas/UserIdentity'
+    ErrorDetail:
+      type: object
+      additionalProperties: false
+      required: [field, reason]
+      properties:
+        field:
+          type: string
+          description: Campo de entrada asociado al error de validación.
+          example: passwordConfirmation
+        reason:
+          type: string
+          description: Identificador técnico estable; el frontend traduce el texto visible.
+          example: PASSWORD_CONFIRMATION_MISMATCH
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          description: Código estable para traducir y probar el error.
+          example: VALIDATION_ERROR
+        message:
+          type: string
+          description: Mensaje seguro sin contraseñas, tokens ni detalles internos.
+          example: Request validation failed.
+        requestId:
+          type: string
+          description: Identificador opcional para correlación con logs.
+          example: req_gb002_fictitious
+        details:
+          type: array
+          description: Detalles opcionales de validación por campo.
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+  responses:
+    ValidationError:
+      description: El cuerpo no cumple las validaciones del contrato
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            invalidPassword:
+              value:
+                code: VALIDATION_ERROR
+                message: Request validation failed.
+                requestId: req_gb004_fictitious
+                details:
+                  - field: password
+                    reason: PASSWORD_POLICY_NOT_MET
+    UnauthenticatedError:
+      description: Bearer ausente, inválido, expirado o revocado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            missing:
+              value:
+                code: TOKEN_MISSING
+                message: Authentication is required.
+                requestId: req_gb005_missing_fictitious
+            invalid:
+              value:
+                code: TOKEN_INVALID
+                message: Authentication is no longer valid.
+                requestId: req_gb005_invalid_fictitious
+            expired:
+              value:
+                code: TOKEN_EXPIRED
+                message: Authentication is no longer valid.
+                requestId: req_gb005_expired_fictitious
+            revoked:
+              value:
+                code: SESSION_REVOKED
+                message: Authentication is no longer valid.
+                requestId: req_gb005_fictitious
+            disabled:
+              value:
+                code: ACCOUNT_DISABLED
+                message: The account is disabled.
+                requestId: req_gb005_disabled_fictitious
+    InternalError:
+      description: Error interno sin detalles de implementación
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            generic:
+              value:
+                code: INTERNAL_ERROR
+                message: An unexpected error occurred.
+                requestId: req_gb006_fictitious

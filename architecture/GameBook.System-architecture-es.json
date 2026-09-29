@@ -1,0 +1,223 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Arquitectura de GameBook",
+    "output": "GameBook.System-architecture-es.html",
+    "animation": "none",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/CarlosSV923/GameBook.Frontend",
+      "provider": "github",
+      "revision": "f9735f1d4b4b6fe0dd983e63538af5da9b2b6eb4"
+    },
+    "views": [
+      {
+        "id": "runtime-path",
+        "label": "Ruta de ejecución",
+        "focus": ["browser", "frontend", "authuser", "game", "neon"],
+        "note": "Sigue el tráfico del navegador por Next.js, los dos servicios backend y la persistencia en Neon."
+      },
+      {
+        "id": "identity-boundary",
+        "label": "Identidad y autorización",
+        "focus": ["frontend", "authuser", "game"],
+        "note": "Traza la emisión del JWT RS256, su propagación como Bearer y la validación de sesión en AuthUser."
+      },
+      {
+        "id": "igdb-path",
+        "label": "Ruta server-side de IGDB",
+        "focus": ["frontend", "twitch", "igdb"],
+        "note": "Muestra cómo Next.js obtiene el token de aplicación y consulta IGDB sin exponer credenciales."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "browser",
+      "type": "external",
+      "label": "Navegador",
+      "sublabel": "UI pública/autenticada",
+      "pos": [40, 370],
+      "size": [160, 72],
+      "tag": "HTTPS"
+    },
+    {
+      "id": "frontend",
+      "type": "frontend",
+      "label": "GameBook.Frontend",
+      "sublabel": "Next.js • Vercel",
+      "pos": [270, 350],
+      "size": [220, 112],
+      "tag": "Navegador + rutas server-side",
+      "sources": [
+        { "path": "src/app/api/igdb/games/route.ts", "label": "Ruta IGDB" },
+        { "path": "src/server/igdb/igdb-runtime-config.ts", "label": "Configuración server-only" },
+        { "path": "src/shared/api/healthcheck.ts", "label": "Puerta de healthcheck" }
+      ]
+    },
+    {
+      "id": "authuser",
+      "type": "backend",
+      "label": "AuthUser",
+      "sublabel": "NestJS • Render • emisor JWT",
+      "pos": [610, 230],
+      "size": [210, 96],
+      "tag": "gamebook-microservice-authuser"
+    },
+    {
+      "id": "game",
+      "type": "backend",
+      "label": "Game",
+      "sublabel": "NestJS • Render • API de favoritos",
+      "pos": [610, 500],
+      "size": [210, 96],
+      "tag": "gamebook-microservice-game"
+    },
+    {
+      "id": "neon",
+      "type": "database",
+      "label": "Neon PostgreSQL",
+      "sublabel": "Base compartida • esquemas auth y game",
+      "pos": [1010, 365],
+      "size": [240, 100],
+      "tag": "Roles runtime aislados por esquema"
+    },
+    {
+      "id": "twitch",
+      "type": "external",
+      "label": "Twitch OAuth",
+      "sublabel": "Endpoint de token de aplicación",
+      "pos": [580, 45],
+      "size": [210, 78],
+      "tag": "Credenciales de cliente"
+    },
+    {
+      "id": "igdb",
+      "type": "external",
+      "label": "IGDB API",
+      "sublabel": "Catálogo y detalles IGDB v4",
+      "pos": [1030, 110],
+      "size": [210, 78],
+      "tag": "Client-ID + Bearer"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Producción Vercel",
+      "wraps": ["frontend"],
+      "pad": 26
+    },
+    {
+      "kind": "region",
+      "label": "Producción Render",
+      "wraps": ["authuser", "game"],
+      "pad": 26
+    },
+    {
+      "kind": "region",
+      "label": "Producción Neon",
+      "wraps": ["neon"],
+      "pad": 26
+    },
+    {
+      "kind": "security-group",
+      "label": "Credenciales IGDB solo en servidor",
+      "wraps": ["frontend"],
+      "pad": 14
+    }
+  ],
+  "connections": [
+    {
+      "id": "browser-to-frontend",
+      "from": "browser",
+      "to": "frontend",
+      "label": "HTTPS",
+      "variant": "emphasis"
+    },
+    {
+      "id": "frontend-to-authuser",
+      "from": "frontend",
+      "to": "authuser",
+      "label": "API Auth + GET /health",
+      "variant": "security",
+      "labelDx": 50,
+      "labelDy": 8
+    },
+    {
+      "id": "frontend-to-game",
+      "from": "frontend",
+      "to": "game",
+      "label": "API de favoritos + GET /health",
+      "variant": "security"
+    },
+    {
+      "id": "authuser-to-neon",
+      "from": "authuser",
+      "to": "neon",
+      "label": "Prisma • esquema auth"
+    },
+    {
+      "id": "game-to-neon",
+      "from": "game",
+      "to": "neon",
+      "label": "Prisma • esquema game"
+    },
+    {
+      "id": "game-to-authuser",
+      "from": "game",
+      "to": "authuser",
+      "label": "GET /v1/auth/session",
+      "variant": "security"
+    },
+    {
+      "id": "frontend-to-twitch",
+      "from": "frontend",
+      "to": "twitch",
+      "label": "Token OAuth",
+      "variant": "dashed",
+      "labelDy": -70
+    },
+    {
+      "id": "frontend-to-igdb",
+      "from": "frontend",
+      "to": "igdb",
+      "label": "Consultas IGDB v4 desde el servidor",
+      "variant": "emphasis",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "via": [[380, 210], [1135, 210]]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Superficie pública",
+      "items": [
+        "El navegador accede a IGDB mediante las rutas de Next.js.",
+        "AuthUser y Game permanecen como servicios backend separados en Render.",
+        "Los healthchecks preceden las llamadas del Frontend a ambos backends."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Límite de identidad",
+      "items": [
+        "AuthUser firma JWT RS256 con sub, ver, iat, exp, iss y aud.",
+        "Game verifica el JWT Bearer y confirma la sesión con AuthUser.",
+        "sessionVersion e isDisabled aplican revocación y estado de cuenta."
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Datos y servicios externos",
+      "items": [
+        "Neon contiene los esquemas auth y game con roles runtime restringidos.",
+        "Twitch emite el token de aplicación usado por el cliente IGDB server-only.",
+        "Las credenciales IGDB nunca llegan al navegador ni a los backends.",
+        "Los controles fijos del visor siguen en inglés."
+      ]
+    }
+  ]
+}

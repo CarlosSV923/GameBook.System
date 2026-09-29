@@ -1,0 +1,223 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "GameBook production architecture",
+    "locale": "en",
+    "output": "GameBook.System-architecture-en.html",
+    "animation": "none",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/CarlosSV923/GameBook.Frontend",
+      "provider": "github",
+      "revision": "f9735f1d4b4b6fe0dd983e63538af5da9b2b6eb4"
+    },
+    "views": [
+      {
+        "id": "runtime-path",
+        "label": "Runtime path",
+        "focus": ["browser", "frontend", "authuser", "game", "neon"],
+        "note": "Follow browser traffic through Next.js, the two backend services and Neon persistence."
+      },
+      {
+        "id": "identity-boundary",
+        "label": "Identity and authorization",
+        "focus": ["frontend", "authuser", "game"],
+        "note": "Trace RS256 JWT issuance, Bearer propagation and AuthUser session validation."
+      },
+      {
+        "id": "igdb-path",
+        "label": "Server-side IGDB path",
+        "focus": ["frontend", "twitch", "igdb"],
+        "note": "See how Next.js obtains the application token and queries IGDB without exposing credentials."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "browser",
+      "type": "external",
+      "label": "Browser",
+      "sublabel": "Public and authenticated UI",
+      "pos": [40, 370],
+      "size": [160, 72],
+      "tag": "HTTPS"
+    },
+    {
+      "id": "frontend",
+      "type": "frontend",
+      "label": "GameBook.Frontend",
+      "sublabel": "Next.js • Vercel",
+      "pos": [270, 350],
+      "size": [220, 112],
+      "tag": "Browser + server routes",
+      "sources": [
+        { "path": "src/app/api/igdb/games/route.ts", "label": "IGDB route" },
+        { "path": "src/server/igdb/igdb-runtime-config.ts", "label": "Server-only config" },
+        { "path": "src/shared/api/healthcheck.ts", "label": "Healthcheck gate" }
+      ]
+    },
+    {
+      "id": "authuser",
+      "type": "backend",
+      "label": "AuthUser",
+      "sublabel": "NestJS • Render • JWT issuer",
+      "pos": [610, 230],
+      "size": [210, 96],
+      "tag": "gamebook-microservice-authuser"
+    },
+    {
+      "id": "game",
+      "type": "backend",
+      "label": "Game",
+      "sublabel": "NestJS • Render • favorites API",
+      "pos": [610, 500],
+      "size": [210, 96],
+      "tag": "gamebook-microservice-game"
+    },
+    {
+      "id": "neon",
+      "type": "database",
+      "label": "Neon PostgreSQL",
+      "sublabel": "Shared database • auth and game schemas",
+      "pos": [1010, 365],
+      "size": [240, 100],
+      "tag": "Runtime roles isolated by schema"
+    },
+    {
+      "id": "twitch",
+      "type": "external",
+      "label": "Twitch OAuth",
+      "sublabel": "Application token endpoint",
+      "pos": [580, 45],
+      "size": [210, 78],
+      "tag": "Client credentials"
+    },
+    {
+      "id": "igdb",
+      "type": "external",
+      "label": "IGDB API",
+      "sublabel": "IGDB v4 catalog and details",
+      "pos": [1030, 110],
+      "size": [210, 78],
+      "tag": "Client-ID + Bearer"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Vercel production",
+      "wraps": ["frontend"],
+      "pad": 26
+    },
+    {
+      "kind": "region",
+      "label": "Render production",
+      "wraps": ["authuser", "game"],
+      "pad": 26
+    },
+    {
+      "kind": "region",
+      "label": "Neon production",
+      "wraps": ["neon"],
+      "pad": 26
+    },
+    {
+      "kind": "security-group",
+      "label": "Server-only IGDB credentials",
+      "wraps": ["frontend"],
+      "pad": 14
+    }
+  ],
+  "connections": [
+    {
+      "id": "browser-to-frontend",
+      "from": "browser",
+      "to": "frontend",
+      "label": "HTTPS UI",
+      "variant": "emphasis"
+    },
+    {
+      "id": "frontend-to-authuser",
+      "from": "frontend",
+      "to": "authuser",
+      "label": "Auth API + GET /health",
+      "variant": "security",
+      "labelDx": 80,
+      "labelDy": 8
+    },
+    {
+      "id": "frontend-to-game",
+      "from": "frontend",
+      "to": "game",
+      "label": "Favorites API + GET /health",
+      "variant": "security"
+    },
+    {
+      "id": "authuser-to-neon",
+      "from": "authuser",
+      "to": "neon",
+      "label": "Prisma • auth schema"
+    },
+    {
+      "id": "game-to-neon",
+      "from": "game",
+      "to": "neon",
+      "label": "Prisma • game schema"
+    },
+    {
+      "id": "game-to-authuser",
+      "from": "game",
+      "to": "authuser",
+      "label": "GET /v1/auth/session",
+      "variant": "security"
+    },
+    {
+      "id": "frontend-to-twitch",
+      "from": "frontend",
+      "to": "twitch",
+      "label": "OAuth token",
+      "variant": "dashed",
+      "labelDy": -70
+    },
+    {
+      "id": "frontend-to-igdb",
+      "from": "frontend",
+      "to": "igdb",
+      "label": "Server-side IGDB v4 queries",
+      "variant": "emphasis",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "via": [[380, 210], [1135, 210]]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Public surface",
+      "items": [
+        "The browser reaches IGDB through Next.js route handlers.",
+        "AuthUser and Game remain separate backend services on Render.",
+        "Healthchecks precede Frontend calls to either backend."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Identity boundary",
+      "items": [
+        "AuthUser signs RS256 JWTs with sub, ver, iat, exp, iss and aud.",
+        "Game verifies the Bearer JWT and confirms the session with AuthUser.",
+        "sessionVersion and isDisabled enforce revocation and account state."
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Data and external services",
+      "items": [
+        "Neon holds auth and game schemas with restricted runtime roles.",
+        "Twitch issues the application token used by the server-only IGDB client.",
+        "IGDB credentials never enter the browser or either backend."
+      ]
+    }
+  ]
+}

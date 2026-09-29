@@ -1,0 +1,660 @@
+openapi: 3.0.3
+info:
+  title: GameBook Game API
+  version: 0.1.0
+  description: |
+    Contrato HTTP JSON de Game incluido en la línea base GB-002. Todas las
+    operaciones son privadas, se aíslan por el `sub` del Bearer JWT y
+    consultan AuthUser para comprobar revocación antes de leer o modificar
+    favoritos.
+servers:
+  - url: http://localhost:3002
+    description: Desarrollo local (puerto previsto; puede configurarse por entorno)
+tags:
+  - name: Favorites
+    description: Favoritos propios, filtros y paginación
+  - name: Suggestions
+    description: Sugerencias derivadas de todos los favoritos propios
+paths:
+  /v1/favorites:
+    get:
+      tags: [Favorites]
+      operationId: listFavorites
+      summary: Listar y filtrar favoritos propios
+      description: |
+        Devuelve únicamente favoritos cuyo propietario es el `sub` validado.
+        `name`, `platformId`, `yearFrom` y `yearTo` se combinan con AND. El
+        intervalo anual es inclusivo; un año concreto se representa con el
+        mismo valor en `yearFrom` y `yearTo`. El orden `name` ascendente y
+        `rawgId` ascendente es determinista para el desplazamiento infinito.
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/NameFilter'
+        - $ref: '#/components/parameters/PlatformIdFilter'
+        - $ref: '#/components/parameters/YearFrom'
+        - $ref: '#/components/parameters/YearTo'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: Página de favoritos del usuario autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoritePage'
+              examples:
+                firstPage:
+                  value:
+                    items:
+                      - rawgId: 3498
+                        name: Grand Theft Auto V
+                        released: '2013-09-17'
+                        imageUrl: https://media.example.test/games/3498.jpg
+                        rating: 4.47
+                        platforms:
+                          - id: 4
+                            name: PC
+                    page: 1
+                    pageSize: 20
+                    total: 1
+                    hasNext: false
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthenticatedError'
+        '503':
+          $ref: '#/components/responses/AuthUserUnavailable'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      tags: [Favorites]
+      operationId: createFavorite
+      summary: Guardar un favorito propio
+      description: |
+        Crea una entrada con propietario tomado del `sub` autenticado. La
+        unicidad lógica `(sub, rawgId)` impide duplicados incluso con
+        solicitudes simultáneas. No acepta `userId` desde el cliente.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FavoriteCreate'
+            examples:
+              valid:
+                summary: Favorito ficticio
+                value:
+                  rawgId: 3498
+                  name: Grand Theft Auto V
+                  released: '2013-09-17'
+                  imageUrl: https://media.example.test/games/3498.jpg
+                  rating: 4.47
+                  platforms:
+                    - id: 4
+                      name: PC
+      responses:
+        '201':
+          description: Favorito creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Favorite'
+              examples:
+                created:
+                  value:
+                    rawgId: 3498
+                    name: Grand Theft Auto V
+                    released: '2013-09-17'
+                    imageUrl: https://media.example.test/games/3498.jpg
+                    rating: 4.47
+                    platforms:
+                      - id: 4
+                        name: PC
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthenticatedError'
+        '409':
+          description: El usuario ya tiene ese RAWG ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                duplicate:
+                  value:
+                    code: FAVORITE_ALREADY_EXISTS
+                    message: The game is already in your favorites.
+                    requestId: req_game_duplicate_fictitious
+        '503':
+          $ref: '#/components/responses/AuthUserUnavailable'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /v1/favorites/suggestions:
+    get:
+      tags: [Suggestions]
+      operationId: suggestFavorites
+      summary: Sugerir nombres o plataformas propios
+      description: |
+        Busca sugerencias acotadas en todos los favoritos del `sub`, no solo
+        en la página visible. `q` es texto parcial; `type=platform` devuelve
+        también el ID RAWG de la plataforma para que el frontend pueda aplicar
+        el filtro correspondiente.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: type
+          in: query
+          required: true
+          description: Campo sobre el que se solicita la sugerencia.
+          schema:
+            type: string
+            enum: [name, platform]
+        - name: q
+          in: query
+          required: true
+          description: Texto parcial, sin espacios iniciales ni finales.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 100
+          example: grand
+        - name: limit
+          in: query
+          required: false
+          description: Límite de sugerencias devueltas.
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 20
+            default: 10
+      responses:
+        '200':
+          description: Sugerencias propias acotadas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuggestionPage'
+              examples:
+                names:
+                  value:
+                    type: name
+                    query: grand
+                    items:
+                      - type: name
+                        value: Grand Theft Auto V
+                platforms:
+                  value:
+                    type: platform
+                    query: pc
+                    items:
+                      - type: platform
+                        value: PC
+                        platformId: 4
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthenticatedError'
+        '503':
+          $ref: '#/components/responses/AuthUserUnavailable'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /v1/favorites/{rawgId}/snapshot:
+    patch:
+      tags: [Favorites]
+      operationId: updateFavoriteSnapshot
+      summary: Actualizar la instantánea básica de un favorito
+      description: |
+        Solo actualiza un favorito propio existente después de que Next.js
+        haya obtenido correctamente el detalle de RAWG. No crea una entrada
+        implícita y no solicita RAWG desde Game. Se debe enviar al menos un
+        campo; los valores anulables permiten conservar la ausencia informada
+        por RAWG.
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RawgIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FavoriteSnapshotUpdate'
+            examples:
+              refreshed:
+                summary: Instantánea ficticia actualizada
+                value:
+                  name: Grand Theft Auto V
+                  released: '2013-09-17'
+                  imageUrl: https://media.example.test/games/3498-updated.jpg
+                  rating: 4.48
+                  platforms:
+                    - id: 4
+                      name: PC
+      responses:
+        '200':
+          description: Instantánea actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Favorite'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthenticatedError'
+        '404':
+          $ref: '#/components/responses/FavoriteNotFound'
+        '503':
+          $ref: '#/components/responses/AuthUserUnavailable'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /v1/favorites/{rawgId}:
+    delete:
+      tags: [Favorites]
+      operationId: deleteFavorite
+      summary: Eliminar un favorito propio
+      description: Elimina únicamente la entrada del `sub` autenticado tras la confirmación de la UI.
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RawgIdPath'
+      responses:
+        '204':
+          description: Favorito eliminado; no se devuelve cuerpo
+        '401':
+          $ref: '#/components/responses/UnauthenticatedError'
+        '404':
+          $ref: '#/components/responses/FavoriteNotFound'
+        '503':
+          $ref: '#/components/responses/AuthUserUnavailable'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Mismo JWT de usuario emitido por AuthUser; nunca un token de servicio alternativo.
+  parameters:
+    RawgIdPath:
+      name: rawgId
+      in: path
+      required: true
+      description: Identificador entero del juego en RAWG.
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+      example: 3498
+    NameFilter:
+      name: name
+      in: query
+      required: false
+      description: Coincidencia parcial sin distinguir mayúsculas/minúsculas.
+      schema:
+        type: string
+        maxLength: 100
+      example: grand
+    PlatformIdFilter:
+      name: platformId
+      in: query
+      required: false
+      description: ID entero de la plataforma RAWG.
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+      example: 4
+    YearFrom:
+      name: yearFrom
+      in: query
+      required: false
+      description: Año inicial inclusivo; debe ser menor o igual que yearTo.
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 9999
+      example: 2013
+    YearTo:
+      name: yearTo
+      in: query
+      required: false
+      description: Año final inclusivo; debe ser mayor o igual que yearFrom.
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 9999
+      example: 2020
+    Page:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        default: 1
+      example: 1
+    PageSize:
+      name: pageSize
+      in: query
+      required: false
+      description: Tamaño acotado de página para desplazamiento infinito.
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 50
+        default: 20
+      example: 20
+  schemas:
+    Platform:
+      type: object
+      additionalProperties: false
+      required: [id, name]
+      properties:
+        id:
+          type: integer
+          format: int32
+          minimum: 1
+          description: Identificador RAWG de la plataforma.
+          example: 4
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+          example: PC
+    Favorite:
+      type: object
+      additionalProperties: false
+      required: [rawgId, name, released, imageUrl, rating, platforms]
+      properties:
+        rawgId:
+          type: integer
+          format: int32
+          minimum: 1
+          example: 3498
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+          example: Grand Theft Auto V
+        released:
+          type: string
+          format: date
+          nullable: true
+          description: Fecha de lanzamiento local; null si RAWG no la entrega.
+          example: '2013-09-17'
+        imageUrl:
+          type: string
+          format: uri
+          nullable: true
+          description: URL de imagen recibida de RAWG; null si está ausente.
+          example: https://media.example.test/games/3498.jpg
+        rating:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 5
+          nullable: true
+          description: Puntuación de RAWG; null si está ausente.
+          example: 4.47
+        platforms:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/Platform'
+    FavoriteCreate:
+      type: object
+      additionalProperties: false
+      required: [rawgId, name]
+      properties:
+        rawgId:
+          type: integer
+          format: int32
+          minimum: 1
+          example: 3498
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+          example: Grand Theft Auto V
+        released:
+          type: string
+          format: date
+          nullable: true
+          example: '2013-09-17'
+        imageUrl:
+          type: string
+          format: uri
+          nullable: true
+          example: https://media.example.test/games/3498.jpg
+        rating:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 5
+          nullable: true
+          example: 4.47
+        platforms:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/Platform'
+    FavoriteSnapshotUpdate:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+          example: Grand Theft Auto V
+        released:
+          type: string
+          format: date
+          nullable: true
+          example: '2013-09-17'
+        imageUrl:
+          type: string
+          format: uri
+          nullable: true
+          example: https://media.example.test/games/3498-updated.jpg
+        rating:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 5
+          nullable: true
+          example: 4.48
+        platforms:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/Platform'
+    FavoritePage:
+      type: object
+      additionalProperties: false
+      required: [items, page, pageSize, total, hasNext]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Favorite'
+        page:
+          type: integer
+          format: int32
+          minimum: 1
+          example: 1
+        pageSize:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 50
+          example: 20
+        total:
+          type: integer
+          format: int32
+          minimum: 0
+          example: 1
+        hasNext:
+          type: boolean
+          example: false
+    NameSuggestion:
+      type: object
+      additionalProperties: false
+      required: [type, value]
+      properties:
+        type:
+          type: string
+          enum: [name]
+        value:
+          type: string
+          minLength: 1
+          maxLength: 200
+          example: Grand Theft Auto V
+    PlatformSuggestion:
+      type: object
+      additionalProperties: false
+      required: [type, value, platformId]
+      properties:
+        type:
+          type: string
+          enum: [platform]
+        value:
+          type: string
+          minLength: 1
+          maxLength: 120
+          example: PC
+        platformId:
+          type: integer
+          format: int32
+          minimum: 1
+          example: 4
+    SuggestionPage:
+      type: object
+      additionalProperties: false
+      required: [type, query, items]
+      properties:
+        type:
+          type: string
+          enum: [name, platform]
+        query:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: grand
+        items:
+          type: array
+          maxItems: 20
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/NameSuggestion'
+              - $ref: '#/components/schemas/PlatformSuggestion'
+    ErrorDetail:
+      type: object
+      additionalProperties: false
+      required: [field, reason]
+      properties:
+        field:
+          type: string
+          example: yearFrom
+        reason:
+          type: string
+          example: YEAR_RANGE_INVALID
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          description: Código estable que el frontend puede traducir.
+          example: VALIDATION_ERROR
+        message:
+          type: string
+          description: Mensaje seguro sin SQL, tokens ni datos de otra cuenta.
+          example: Request validation failed.
+        requestId:
+          type: string
+          example: req_game_fictitious
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+  responses:
+    ValidationError:
+      description: Parámetros, cuerpo o rango de años inválido
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            invalidRange:
+              value:
+                code: VALIDATION_ERROR
+                message: Request validation failed.
+                requestId: req_game_validation_fictitious
+                details:
+                  - field: yearFrom
+                    reason: YEAR_RANGE_INVALID
+    UnauthenticatedError:
+      description: Bearer ausente, inválido, expirado o revocado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            revoked:
+              value:
+                code: SESSION_REVOKED
+                message: Authentication is no longer valid.
+                requestId: req_game_auth_fictitious
+    FavoriteNotFound:
+      description: El favorito propio no existe
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            absent:
+              value:
+                code: FAVORITE_NOT_FOUND
+                message: Favorite not found.
+                requestId: req_game_not_found_fictitious
+    AuthUserUnavailable:
+      description: AuthUser no pudo confirmar la sesión; Game falla cerrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            unavailable:
+              value:
+                code: AUTHUSER_UNAVAILABLE
+                message: Authentication service is temporarily unavailable.
+                requestId: req_game_unavailable_fictitious
+    InternalError:
+      description: Error interno sin detalles de implementación
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            generic:
+              value:
+                code: INTERNAL_ERROR
+                message: An unexpected error occurred.
+                requestId: req_game_internal_fictitious

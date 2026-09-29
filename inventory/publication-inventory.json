@@ -1,0 +1,118 @@
+{
+  "task": "GB-014.06",
+  "status": "published",
+  "repository": "GameBook.System",
+  "stagingRoot": "GameBook.System",
+  "publication": {
+    "url": "https://github.com/CarlosSV923/GameBook.System",
+    "visibility": "public",
+    "defaultBranch": "main",
+    "branches": [
+      "main"
+    ],
+    "initialCommitCount": 1
+  },
+  "included": {
+    "rootDocumentation": [
+      "AGENTS.md",
+      "CLAUDE.md"
+    ],
+    "sdd": [
+      "specs/mvp.md",
+      "plan/mvp.md",
+      "tasks/mvp.md"
+    ],
+    "contracts": {
+      "current": [
+        "contracts/contract-baseline-v3.md",
+        "contracts/persistence-access-amendment-v2.md",
+        "contracts/persistence-igdb.md",
+        "contracts/persistence-environments.md",
+        "contracts/authuser.openapi.yaml",
+        "contracts/game.openapi.yaml",
+        "contracts/game-igdb.openapi.yaml"
+      ],
+      "historicalOrTraceability": [
+        "contracts/contract-baseline.md",
+        "contracts/contract-baseline-v2.md",
+        "contracts/persistence-access-amendment.md",
+        "contracts/rawg-mapping.md",
+        "contracts/igdb-mapping.md",
+        "contracts/mvp-traceability.md",
+        "contracts/mvp-traceability-igdb.md",
+        "contracts/jwt-revocation.md"
+      ]
+    },
+    "environments": [
+      "environments/deployment-policy-local-first.md",
+      "environments/gb-003.01-neon.md",
+      "environments/gb-003.02-schema-isolation.md",
+      "environments/gb-003.03-vercel.md",
+      "environments/gb-003.04-secrets-and-variables.md",
+      "environments/gb-003.05-variable-handoff.md",
+      "environments/gb-003.06-migrator-isolation.md",
+      "environments/gb-004.01-authuser-base.md"
+    ],
+    "architecture": [
+      "architecture/GameBook.System-architecture-en.html",
+      "architecture/GameBook.System-architecture-en.json",
+      "architecture/GameBook.System-architecture-en.visual-check.html",
+      "architecture/GameBook.System-architecture-en.visual-check.json",
+      "architecture/GameBook.System-architecture-en.visual-check.1440x900.dark.png",
+      "architecture/GameBook.System-architecture-en.visual-check.1440x900.light.png",
+      "architecture/GameBook.System-architecture-en.visual-check.2048x1320.dark.png",
+      "architecture/GameBook.System-architecture-en.visual-check.2048x1320.light.png",
+      "architecture/GameBook.System-architecture-es.html",
+      "architecture/GameBook.System-architecture-es.json",
+      "architecture/GameBook.System-architecture-es.visual-check.html",
+      "architecture/GameBook.System-architecture-es.visual-check.json",
+      "architecture/GameBook.System-architecture-es.visual-check.1440x900.dark.png",
+      "architecture/GameBook.System-architecture-es.visual-check.1440x900.light.png",
+      "architecture/GameBook.System-architecture-es.visual-check.2048x1320.dark.png",
+      "architecture/GameBook.System-architecture-es.visual-check.2048x1320.light.png"
+    ]
+  },
+  "documentation": [
+    "README.md",
+    "README.es.md"
+  ],
+  "languagePolicy": {
+    "bilingualGeneralDocumentation": [
+      "README.md",
+      "README.es.md"
+    ],
+    "preservedSpanishTraceability": [
+      "AGENTS.md",
+      "CLAUDE.md",
+      "specs/",
+      "plan/",
+      "tasks/",
+      "contracts/",
+      "environments/"
+    ],
+    "note": "La documentación general nueva tiene pares EN/ES; los documentos SDD, contratos, ambientes y reglas ya generados en español se conservan en español por decisión del autor."
+  },
+  "generatedForThisTask": [
+    "inventory/publication-inventory.json",
+    "inventory/prepublication-audit.json",
+    "README.md",
+    "README.es.md"
+  ],
+  "excluded": [
+    "secrets/",
+    ".agents/",
+    ".codebase-memory/",
+    ".pnpm-store/",
+    "GameBook.Frontend/",
+    "GameBook.Microservice.AuthUser/",
+    "GameBook.Microservice.Game/",
+    "node_modules/",
+    ".next/",
+    ".vercel/",
+    "skills-lock.json",
+    "credentials, tokens, private keys, local environment files and other generated caches"
+  ],
+  "notYetIncluded": [
+    "GitHub Pages publication and application README back-links (GB-014.07–GB-014.08)"
+  ]
+}
