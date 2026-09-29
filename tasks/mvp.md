@@ -358,9 +358,9 @@ No se inventan requisitos. Si surge una decisión funcional nueva, primero se pr
 - Calidad local: `pnpm test` pasó con 13 archivos y 66 pruebas; `pnpm test:e2e` con 3 archivos y 22 pruebas; `pnpm lint`, `pnpm typecheck`, `pnpm build` y `git diff --check` pasaron. `pnpm format:check` reportó 49 archivos TypeScript preexistentes fuera del alcance; no se reformatearon para esta subtarea.
 - PR de implementación: [Game #39](https://github.com/CarlosSV923/GameBook.Microservice.Game/pull/39), `feature/013-09/game-architecture` → `develop`, fusionado el 2026-09-28 a las 03:16:06 UTC con merge `e1158b094111fa0816162b7dc6adfadb0c7a1c21`; ambos checks `repository-baseline` terminaron `SUCCESS` (runs `36373001193` y `36373019506`). La promoción [Game #40](https://github.com/CarlosSV923/GameBook.Microservice.Game/pull/40), `develop` → `main`, fue fusionada el 2026-09-28 a las 03:19:42 UTC con merge `0ea4aed9960f75492b1e70811bc187a61bb3c116`; ambos checks `repository-baseline` terminaron `SUCCESS`. `main` fue verificado en ese commit y las dos variantes de GitHub Pages respondieron HTTP 200 con contenido Archify. GB-013.09 queda `[ RESOLVED ]` y GB-013 se cierra sin iniciar GB-014.
 
-### [ NEW ] GB-014 — Crear y publicar una sola vez GameBook.System
+### [ ACTIVE ] GB-014 — Crear y mantener la documentación publicada de GameBook.System
 
-Ámbito: coordinación y documentación; `GameBook.System` es cuarto repositorio **solo documental**. Cierre del grupo: repositorio público con únicamente `main`, un cambio inicial completo, todos sus Markdown EN/ES y enlaces recíprocos con las tres aplicaciones. No hay release-please, Vercel, pnpm ni PR propio.
+Ámbito: coordinación y documentación; `GameBook.System` es cuarto repositorio **solo documental**. La publicación inicial mantiene únicamente `main` y todo el contenido documental completo. Los ajustes documentales posteriores pueden usar PR hacia `main`; no hay release-please, Vercel ni pnpm.
 
 | Estado y subtarea | Depende de | Entregable y comprobación |
 | --- | --- | --- |
@@ -372,6 +372,7 @@ No se inventan requisitos. Si surge una decisión funcional nueva, primero se pr
 | [ RESOLVED ] **GB-014.09** — Ajustar navegación documental, nombres Archify y overview bilingüe | GB-014.05 | README sin enlaces de fuente/recibo ni idioma redundante; cada README abre solo su HTML; artefactos `architecture/` nombrados `GameBook.System-*`; overview con sección Release Please y arquitectura localizada. |
 | [ RESOLVED ] **GB-014.10** — Unificar documentación general en README | GB-014.09 | README EN/ES conserva la información importante de overview sin duplicarla, `docs/` se elimina, no quedan enlaces/referencias rotos y el inventario refleja una única documentación por idioma. |
 | [ RESOLVED ] **GB-014.06** — Crear/publicar GameBook.System | GB-014.05 | `gh` crea repo público **solo con `main`** y sube un único commit inicial con todo listo; URL y contenido público verificados. |
+| [ ACTIVE ] **GB-014.11** — Publicar diagramas de arquitectura con GitHub Pages | GB-014.06 | Añadir un workflow de GitHub Actions que publique los HTML de `architecture/` en GitHub Pages, reemplazar en cada README el enlace local por la URL Pages de su idioma, actualizar la documentación SDD y abrir un PR desde una rama basada en `main`; verificar workflow, URLs y contenido tras la integración. |
 | [ NEW ] **GB-014.07** — Enlazar documentación desde aplicaciones | GB-014.06 | `README.md` y `README.es.md` de AuthUser, Game y Frontend enlazan `GameBook.System` mediante el flujo normal de PR de cada aplicación. |
 | [ NEW ] **GB-014.08** — Comprobar entrega documental | GB-014.07 | Cuatro repos públicos accesibles, README principal de cada uno en inglés, versiones españolas completas, enlaces bidireccionales y diagramas EN/ES abiertos; sin publicaciones adicionales en `GameBook.System`. |
 
@@ -446,6 +447,13 @@ No se inventan requisitos. Si surge una decisión funcional nueva, primero se pr
 - Se publicó el paquete documental completo en [`CarlosSV923/GameBook.System`](https://github.com/CarlosSV923/GameBook.System) como repositorio público, con `main` como única rama y rama predeterminada. La publicación contiene todo el staging validado, incluidos `README.md`, `README.es.md`, `architecture/`, `inventory/`, `specs/`, `plan/`, `tasks/`, `contracts/` y `environments/`.
 - El repositorio se creó mediante `gh repo create` desde este staging y conserva un único commit inicial; no se crearon `develop`, PR, releases ni publicaciones adicionales en `GameBook.System`.
 - La validación pública comprobó la URL del repositorio, la visibilidad pública, la rama predeterminada `main`, la existencia de los dos README, los HTML de arquitectura EN/ES y los recibos de inventario. La validación local conserva 48 archivos, 27 Markdown, `docs/` ausente, inventario completo, `0` enlaces relativos rotos y `0` JSON inválidos.
+
+#### GB-014.11 — Evidencia de ejecución
+
+- Estado: `[ ACTIVE ]` (2026-09-29, America/Guayaquil). Dependencia `GB-014.06` verificada como `[ RESOLVED ]` antes del inicio.
+- Se creó la rama `feature/014-11/github-pages-architecture` desde `main`. El alcance se limita a publicar estáticamente los HTML existentes en `architecture/`, actualizar los enlaces localizados de ambos README y documentar la automatización.
+- El workflow `.github/workflows/architecture-pages.yml` usa `workflow_dispatch` y pushes a `main`, publica `architecture/` mediante las acciones oficiales de Pages y no ejecuta código de aplicación ni usa secretos.
+- El PR hacia `main` y la verificación de Pages quedan pendientes de registrar tras su creación. GB-014.11 permanece `[ ACTIVE ]` hasta que el autor fusione el PR y se comprueben el workflow, las URLs EN/ES y el contenido público con HTTP 200.
 
 ## 6. Criterio de traspaso entre herramientas
 

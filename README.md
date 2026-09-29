@@ -22,7 +22,7 @@ The services share a PostgreSQL deployment but use separate database schemas. Th
 
 The validated English Archify artifact for the final application topology is preserved in [`architecture/`](architecture/):
 
-- [Architecture diagram](architecture/GameBook.System-architecture-en.html)
+- [Architecture diagram](https://carlossv923.github.io/GameBook.System/GameBook.System-architecture-en.html)
 
 ![Dark GameBook system architecture](architecture/GameBook.System-architecture-en.visual-check.1440x900.dark.png)
 
