@@ -373,7 +373,7 @@ No se inventan requisitos. Si surge una decisión funcional nueva, primero se pr
 | [ RESOLVED ] **GB-014.10** — Unificar documentación general en README | GB-014.09 | README EN/ES conserva la información importante de overview sin duplicarla, `docs/` se elimina, no quedan enlaces/referencias rotos y el inventario refleja una única documentación por idioma. |
 | [ RESOLVED ] **GB-014.06** — Crear/publicar GameBook.System | GB-014.05 | `gh` crea repo público **solo con `main`** y sube un único commit inicial con todo listo; URL y contenido público verificados. |
 | [ RESOLVED ] **GB-014.11** — Publicar diagramas de arquitectura con GitHub Pages | GB-014.06 | Añadir un workflow de GitHub Actions que publique los HTML de `architecture/` en GitHub Pages, reemplazar en cada README el enlace local por la URL Pages de su idioma, actualizar la documentación SDD y abrir un PR desde una rama basada en `main`; verificar workflow, URLs y contenido tras la integración. |
-| [ NEW ] **GB-014.07** — Enlazar documentación desde aplicaciones | GB-014.06 | `README.md` y `README.es.md` de AuthUser, Game y Frontend enlazan `GameBook.System` mediante el flujo normal de PR de cada aplicación. |
+| [ RESOLVED ] **GB-014.07** — Enlazar documentación desde aplicaciones | GB-014.06 | `README.md` y `README.es.md` de AuthUser, Game y Frontend enlazan `GameBook.System` mediante el flujo normal de PR de cada aplicación. |
 | [ NEW ] **GB-014.08** — Comprobar entrega documental | GB-014.07 | Cuatro repos públicos accesibles, README principal de cada uno en inglés, versiones españolas completas, enlaces bidireccionales y diagramas EN/ES abiertos; sin publicaciones adicionales en `GameBook.System`. |
 
 #### GB-014.01 — Evidencia de cierre
@@ -456,6 +456,14 @@ No se inventan requisitos. Si surge una decisión funcional nueva, primero se pr
 - PR de implementación: [GameBook.System #1](https://github.com/CarlosSV923/GameBook.System/pull/1), `feature/014-11/github-pages-architecture` → `main`, fusionado con merge `6ad2dc1a6949c135a5d4adace390f3c7bd8b6ae2`. GitHub Pages quedó habilitado en modo `workflow` con URL base `https://carlossv923.github.io/GameBook.System/`.
 - Validación remota: el workflow `Deploy architecture diagrams to GitHub Pages` terminó `success` en el run [36519319633](https://github.com/CarlosSV923/GameBook.System/actions/runs/36519319633) sobre `main`. `https://carlossv923.github.io/GameBook.System/GameBook.System-architecture-en.html` y `https://carlossv923.github.io/GameBook.System/GameBook.System-architecture-es.html` respondieron HTTP `200`, con contenido de sus respectivos idiomas.
 - La subtarea queda `[ RESOLVED ]`; el commit de seguimiento registra esta evidencia en `main` sin cambiar el alcance del workflow.
+
+#### GB-014.07 — Evidencia de cierre
+
+- Estado: `[ RESOLVED ]` (2026-09-29, America/Guayaquil). Dependencia `GB-014.06` y GB-014.11 verificadas como `[ RESOLVED ]` antes del inicio.
+- Los seis README de las tres aplicaciones enlazan la documentación de `GameBook.System` en su idioma: README.md apunta a `README.md` y README.es.md apunta a `README.es.md`, conservando los enlaces existentes entre aplicaciones.
+- PRs de implementación fusionados en `develop`: Frontend [#62](https://github.com/CarlosSV923/GameBook.Frontend/pull/62), AuthUser [#41](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/pull/41) y Game [#43](https://github.com/CarlosSV923/GameBook.Microservice.Game/pull/43). Sus checks `repository-baseline` terminaron correctamente.
+- PRs de promoción fusionados en `main`: Frontend [#63](https://github.com/CarlosSV923/GameBook.Frontend/pull/63) con merge `0a21666357ef9af187d606f7d57dcf7f1b945bfb`, AuthUser [#42](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/pull/42) con merge `f1ff07f220ce42a2bd0c553b0e4b005fd04e1fe7` y Game [#44](https://github.com/CarlosSV923/GameBook.Microservice.Game/pull/44) con merge `c3d6e0e820fc3427a80f6376978c8f5bbfe05b6f`.
+- Verificación pública: los seis README de `main` respondieron HTTP 200 y contienen el enlace localizado correspondiente a `GameBook.System`. GB-014.07 queda `[ RESOLVED ]`; GB-014.08 permanece `[ NEW ]`.
 
 ## 6. Criterio de traspaso entre herramientas
 
