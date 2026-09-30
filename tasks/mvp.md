@@ -375,7 +375,7 @@ No se inventan requisitos. Si surge una decisión funcional nueva, primero se pr
 | [ RESOLVED ] **GB-014.11** — Publicar diagramas de arquitectura con GitHub Pages | GB-014.06 | Añadir un workflow de GitHub Actions que publique los HTML de `architecture/` en GitHub Pages, reemplazar en cada README el enlace local por la URL Pages de su idioma, actualizar la documentación SDD y abrir un PR desde una rama basada en `main`; verificar workflow, URLs y contenido tras la integración. |
 | [ RESOLVED ] **GB-014.12** — Añadir Docker Compose de integración local en GameBook.System | GB-012.10, GB-014.06 | `GameBook.System` incorpora un Compose para levantar localmente Frontend, AuthUser y Game desde repositorios hermanos (`../GameBook.Frontend`, `../GameBook.Microservice.AuthUser`, `../GameBook.Microservice.Game`) y una imagen local de PostgreSQL como dependencia por defecto de los backends. Añadir Dockerfiles solo en los repos que los necesiten, documentar variables sin secretos y validar build, arranque, conectividad, healthchecks y apagado; Neon no es obligatorio y solo podrá usarse mediante una configuración alternativa explícita, sin migraciones implícitas. Actualizar documentación EN/ES y registrar los PR de todos los repos afectados. |
 | [ RESOLVED ] **GB-014.07** — Enlazar documentación desde aplicaciones | GB-014.06 | `README.md` y `README.es.md` de AuthUser, Game y Frontend enlazan `GameBook.System` mediante el flujo normal de PR de cada aplicación. |
-| [ ACTIVE ] **GB-014.08** — Comprobar entrega documental | GB-014.07 | Cuatro repos públicos accesibles, README principal de cada uno en inglés, versiones españolas completas, enlaces bidireccionales y diagramas EN/ES abiertos; sin publicaciones adicionales en `GameBook.System`. |
+| [ RESOLVED ] **GB-014.08** — Comprobar entrega documental | GB-014.07 | Cuatro repos públicos accesibles, README principal de cada uno en inglés, versiones españolas completas, enlaces bidireccionales y diagramas EN/ES abiertos; sin publicaciones adicionales en `GameBook.System`. |
 
 #### GB-014.01 — Evidencia de cierre
 
@@ -1708,10 +1708,10 @@ Todo PR de una subtarea de aplicación, publicación o release-please se anota a
 
 ### GB-014.08 — Evidencia de ejecución
 
-- Estado: `[ ACTIVE ]` (2026-09-30, America/Guayaquil). Dependencia `GB-014.07` verificada como `[ RESOLVED ]` antes del inicio.
+- Estado: `[ RESOLVED ]` (2026-09-30, America/Guayaquil). Dependencia `GB-014.07` verificada como `[ RESOLVED ]` antes del inicio.
 - Los cuatro repositorios públicos (`GameBook.Frontend`, `GameBook.Microservice.AuthUser`, `GameBook.Microservice.Game` y `GameBook.System`) tienen visibilidad pública, rama predeterminada `main`, página del repositorio y ambos README accesibles con HTTP `200`.
 - Los ocho README conservan el enlace a su idioma alternativo. Los tres README de aplicaciones enlazan de vuelta a `GameBook.System` en el idioma correspondiente; los dos README de `GameBook.System` enlazan a los tres repositorios de aplicación.
 - Las ocho URLs públicas de GitHub Pages para los diagramas Archify EN/ES respondieron HTTP `200` y contienen el visor Archify. Cada README muestra únicamente el diagrama HTML de su idioma; las variantes oscuras requeridas existen en `architecture/` de los cuatro repositorios.
 - `GameBook.System` no tiene releases adicionales; la publicación documental permanece en `main`. Las ramas de trabajo históricas no se consideran publicaciones adicionales.
-- La comprobación de entrega queda preparada para cierre después de publicar esta evidencia mediante PR hacia `main`; no se marcará `[ RESOLVED ]` hasta verificar ese merge.
+- El PR documental [GameBook.System #7](https://github.com/CarlosSV923/GameBook.System/pull/7) fue fusionado hacia `main` con `5f9a6583e96830253b58bbcd8dc8835ccf9db431`. La auditoría de entrega queda cerrada y GB-014.08 queda `[ RESOLVED ]`.
 
