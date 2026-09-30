@@ -156,6 +156,36 @@ La documentación de los servicios productivos está disponible en [Swagger de A
 
 Las variables de runtime son proporcionadas por los entornos de hosting. Las URLs directas de base de datos usadas por los workflows de migración Prisma no son variables de runtime y no se configuran en Render ni Vercel. El frontend mantiene `IGDB_CLIENT_ID` e `IGDB_CLIENT_SECRET` únicamente en el servidor; las URLs de los servicios son los únicos valores de configuración públicos del frontend.
 
+## Integración local con Docker Compose
+
+`compose.yaml` es el punto de entrada de integración local para los tres repositorios de aplicación hermanos. Clónalos junto a `GameBook.System`:
+
+```text
+Portfolio/
+├── GameBook.System/
+├── GameBook.Frontend/
+├── GameBook.Microservice.AuthUser/
+└── GameBook.Microservice.Game/
+```
+
+Se requiere Docker Desktop con Compose v2. Copia `.env.example` a un archivo `.env` privado dentro de `GameBook.System` y agrega los valores locales de RS256 y las credenciales de prueba de IGDB/Twitch. El Compose inicia por defecto un contenedor local `postgres:16-alpine`, crea los esquemas `auth` y `game`, y conecta AuthUser y Game mediante el hostname interno `postgres`. Este flujo no requiere una cuenta de Neon. Neon solo puede usarse sobrescribiendo explícitamente `AUTH_DATABASE_URL` y `GAME_DATABASE_URL` en el `.env` privado.
+
+Construye e inicia el stack:
+
+```bash
+docker compose up --build -d
+docker compose ps
+```
+
+El primer inicio crea los esquemas, pero no ejecuta migraciones Prisma de forma implícita. Aplica explícitamente las migraciones locales cuando el volumen de base de datos sea nuevo:
+
+```bash
+docker compose run --rm -e AUTH_DATABASE_DIRECT_URL=postgresql://gamebook:gamebook-local@postgres:5432/gamebook?schema=auth authuser pnpm db:migrate:deploy
+docker compose run --rm -e GAME_DATABASE_DIRECT_URL=postgresql://gamebook:gamebook-local@postgres:5432/gamebook?schema=game game pnpm db:migrate:deploy
+```
+
+Las URLs de servicio son `http://localhost:3000` (Frontend), `http://localhost:3001` (AuthUser), `http://localhost:3002` (Game) y `localhost:5432` (PostgreSQL). AuthUser y Game exponen `/health` y `/docs`; los healthchecks de Compose esperan esos servicios antes de iniciar sus dependientes. Detén el stack con `docker compose down`; agrega `-v` únicamente si también deseas eliminar los datos locales de PostgreSQL.
+
 ## 8. Historial de releases
 
 Cada repositorio de aplicación utiliza release-please para gestionar sus releases versionados de forma independiente. `GameBook.System` es solo documental y no utiliza release-please, `pnpm`, Vercel ni una rama `develop`.

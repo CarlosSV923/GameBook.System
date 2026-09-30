@@ -156,6 +156,36 @@ Production service documentation is available at [AuthUser Swagger](https://game
 
 Runtime variables are supplied by the hosting environments. Direct database URLs used by Prisma migration workflows are not runtime variables and are not configured in Render or Vercel. The frontend keeps `IGDB_CLIENT_ID` and `IGDB_CLIENT_SECRET` server-only; browser-facing service URLs are the only public frontend configuration values.
 
+## Local integration with Docker Compose
+
+`compose.yaml` is the local integration entry point for the three sibling application repositories. Clone them next to `GameBook.System`:
+
+```text
+Portfolio/
+├── GameBook.System/
+├── GameBook.Frontend/
+├── GameBook.Microservice.AuthUser/
+└── GameBook.Microservice.Game/
+```
+
+Docker Desktop with Compose v2 is required. Copy `.env.example` to a private `.env` file in `GameBook.System` and add the local RS256 values and IGDB/Twitch test credentials. The Compose stack starts a local `postgres:16-alpine` container by default, creates the `auth` and `game` schemas, and connects AuthUser and Game through the internal `postgres` hostname. No Neon account is required for this flow. Neon can be used only by explicitly overriding `AUTH_DATABASE_URL` and `GAME_DATABASE_URL` in the private `.env` file.
+
+Build and start the stack:
+
+```bash
+docker compose up --build -d
+docker compose ps
+```
+
+The first start creates the schemas but does not run Prisma migrations implicitly. Apply the local migrations explicitly when the database volume is new:
+
+```bash
+docker compose run --rm -e AUTH_DATABASE_DIRECT_URL=postgresql://gamebook:gamebook-local@postgres:5432/gamebook?schema=auth authuser pnpm db:migrate:deploy
+docker compose run --rm -e GAME_DATABASE_DIRECT_URL=postgresql://gamebook:gamebook-local@postgres:5432/gamebook?schema=game game pnpm db:migrate:deploy
+```
+
+The service URLs are `http://localhost:3000` (Frontend), `http://localhost:3001` (AuthUser), `http://localhost:3002` (Game), and `localhost:5432` (PostgreSQL). AuthUser and Game expose `/health` and `/docs`; the Compose healthchecks wait for those services before starting dependants. Stop the stack with `docker compose down`; add `-v` only when the local PostgreSQL data should also be removed.
+
 ## 8. Release history
 
 Each application repository uses release-please to manage its versioned releases independently. `GameBook.System` is documentation-only and does not use release-please, `pnpm`, Vercel, or a `develop` branch.
