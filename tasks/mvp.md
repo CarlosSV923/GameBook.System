@@ -1687,3 +1687,13 @@ Todo PR de una subtarea de aplicación, publicación o release-please se anota a
 | GB-013.08 | AuthUser [#38](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/pull/38) | `develop` → `main` | `MERGED` (2026-09-28 03:03:36 UTC); merge `12618e85e5404d05cc7a515621d58797f58bedfd`; ambos checks `repository-baseline` `SUCCESS` | Autor avisó; agente verificó merge, rama de destino, checks, commit de `main` y HTTP 200 de las variantes EN/ES en Pages. |
 | GB-013.09 | Game [#39](https://github.com/CarlosSV923/GameBook.Microservice.Game/pull/39) | `feature/013-09/game-architecture` → `develop` | `MERGED` (2026-09-28 03:16:06 UTC); merge `e1158b094111fa0816162b7dc6adfadb0c7a1c21`; ambos checks `repository-baseline` `SUCCESS` (runs `36373001193`, `36373019506`) | Agente verificó merge, rama de destino y checks. |
 | GB-013.09 | Game [#40](https://github.com/CarlosSV923/GameBook.Microservice.Game/pull/40) | `develop` → `main` | `MERGED` (2026-09-28 03:19:42 UTC); merge `0ea4aed9960f75492b1e70811bc187a61bb3c116`; ambos checks `repository-baseline` `SUCCESS` | Autor avisó; agente verificó merge, rama de destino, checks, commit de `main` y HTTP 200 de las variantes EN/ES en Pages. |
+
+### GB-014.12 — Evidencia de ejecución
+
+- Estado: `[ ACTIVE ]` (2026-09-29, America/Guayaquil). Dependencias verificadas: `GB-012.10` y `GB-014.06` figuran `[ RESOLVED ]` antes del inicio.
+- La especificación y el plan se actualizaron para que el Compose use PostgreSQL local por defecto; Neon no es obligatorio y solo puede habilitarse mediante URLs explícitas alternativas.
+- Ramas: `feature/014-12/docker-local-postgres` en Frontend, AuthUser y Game; `feature/014-12/local-postgres-compose` en `GameBook.System`.
+- PRs abiertos: [Frontend #64](https://github.com/CarlosSV923/GameBook.Frontend/pull/64), [AuthUser #43](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/pull/43), [Game #45](https://github.com/CarlosSV923/GameBook.Microservice.Game/pull/45) hacia `develop` y [GameBook.System #4](https://github.com/CarlosSV923/GameBook.System/pull/4) hacia `main`.
+- Evidencia local: `docker compose --env-file .env.example config --quiet` pasó; las tres imágenes se construyeron; las migraciones Prisma de AuthUser y Game se ejecutaron explícitamente contra PostgreSQL `16-alpine`; los cuatro servicios quedaron `healthy`; Frontend, `/health` de ambos backends y ambos documentos OpenAPI respondieron HTTP `200`; `docker compose down -v` retiró el stack y el volumen temporal.
+- El cierre queda pendiente de la integración de los cuatro PR y de verificar sus ramas destino y checks; no se marca `[ RESOLVED ]` mientras esos merges no estén confirmados.
+
