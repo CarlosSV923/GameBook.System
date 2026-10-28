@@ -28,7 +28,7 @@ IGDB v4 usa credenciales de **aplicación**, no el JWT de usuario de GameBook:
 
 | Flujo | Consulta IGDB propuesta | Resultado que normaliza Next.js |
 | --- | --- | --- |
-| Catálogo inicial | `/games`, `fields` de tarjeta, `where total_rating != null`, `sort total_rating desc`, `limit`/`offset` | Juegos mejor puntuados por valoración combinada; puntuación 0–100. |
+| Catálogo inicial | `/games`, `fields` de tarjeta, `where total_rating != null & total_rating_count >= 100`, `sort total_rating desc`, `limit`/`offset` | Juegos mejor puntuados por valoración combinada con al menos 100 valoraciones (enmienda GB-016.03); puntuación 0–100. |
 | Filtros combinados | `/games`, `search` para nombre y condiciones `where` con `&` para plataforma y `first_release_date` | Intersección de nombre, plataforma y año/rango; la búsqueda textual puede ordenar por relevancia. |
 | Sugerencias de juegos | `/games` con `search`, `fields id,name`, `limit` acotado | Opciones de nombre; seleccionar aplica el nombre/ID acordado en la interfaz. |
 | Sugerencias de plataformas | `/platforms` con `search`, `fields id,name`, `limit` acotado | Opciones `{ id, name }` para el filtro; sin precargar todo el catálogo. |
@@ -47,6 +47,16 @@ identifican por sus IDs IGDB, no por sus nombres.
   interpola como sintaxis libre. La consulta `search` puede devolver resultados
   por similitud, por lo que **solo el catálogo sin búsqueda** promete orden
   descendente estricto por `total_rating`. No se añaden filtros de producto.
+- **Enmienda GB-016.03 (2026-10-24, `specs/improvements.md` §2):** toda consulta
+  del catálogo ordenada por `total_rating` (sin término de nombre, con o sin
+  plataforma/año) añade `total_rating_count >= 100` (`MIN_TOTAL_RATING_COUNT`,
+  constante del servidor Next.js, no expuesta al navegador). La búsqueda por
+  nombre y las sugerencias no lo aplican. El valor se eligió con datos reales de
+  IGDB, con el filtro de completitud de la aplicación: sin umbral, el top 20 eran
+  juegos con nota 100 y 0–10 valoraciones; con 100 queda un top reconocible y
+  1.961 juegos; con 200 los filtros de nicho se vacían (año 2025: 7 frente a 24;
+  Sega Saturn: 8 frente a 13). Esta enmienda cambia el hash de este archivo
+  registrado en `contract-baseline-v3.md`.
 - `platformId`: entero positivo de una sugerencia de `/platforms`; condición
   `platforms = <id>` combinada con las demás mediante `&`.
 - Año: rango UTC semiabierto de `first_release_date` en segundos Unix,
