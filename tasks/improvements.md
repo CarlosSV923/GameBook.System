@@ -317,6 +317,7 @@ En «Depende de», `GB-014` es el grupo cerrado del MVP en `mvp.md`.
 
 - Estado: `[ RESOLVED ]` (2026-10-28). GB-020.01–.11 están `[ RESOLVED ]` y cumplen spec §7 y los criterios 9–12 de §9: README EN/ES con la estructura de §7.1 y `docs/development*.md` en los cuatro repositorios (9); descripción, topics, homepage y MIT verificados (10); diagramas Archify 3.2 publicados en Pages, con SVG EN/ES en los README y ningún recibo `visual-check`/`delivery` en `architecture/` de `main` en los cuatro repositorios (11); y `specs/`, `plan/` y `tasks/` de la fase en `GameBook.System` (12), con este estado final sincronizado por PR.
 - Con GB-015–GB-021 en `[ RESOLVED ]`, la fase de mejoras queda completa. Versiones finales: Frontend v0.12.0, AuthUser v0.4.0 y Game v0.4.0.
+- Sincronización final verificada (2026-10-28): System #14 está fusionado en `main` (`e909e43`) y el `tasks/improvements.md` publicado muestra GB-020 `[ RESOLVED ]` y ninguna subtarea `[ ACTIVE ]` ni `[ NEW ]`. Criterio 12 cumplido.
 
 #### GB-020.10 — Inicio
 
@@ -324,11 +325,40 @@ En «Depende de», `GB-014` es el grupo cerrado del MVP en `mvp.md`.
 - Cierre GB-020.10: `[ RESOLVED ]` (2026-10-28). #12 fusionado por el autor en `main` de System (`4e73758`); `specs/`, `plan/` y `tasks/improvements.md` y `reviews/` están publicados allí. La copia de `tasks/improvements.md` en System refleja el estado previo a este cierre; el estado final se sincronizará con el cierre del grupo GB-020.
 - Estado: `[ ACTIVE ]` (2026-10-28). Dependencias GB-020.07, GB-020.08 y GB-020.09 verificadas `[ RESOLVED ]`. Rama `feature/020-10/sdd-sync` desde `main` de System. Ejecución con Codex (`gpt-6-luna`). Parte A: copia de `specs/plan/tasks/improvements.md` y `reviews/`, con los enlaces adaptados al repositorio público como en GB-014 y la enmienda GB-016.03 de `contracts/igdb-mapping.md`; no se sobrescriben los archivos MVP ni `AGENTS.md`/`CLAUDE.md`, que se adaptaron al publicarse. Parte B: verificación de la entrega en los cuatro repositorios (puerta I): README, Pages HTTP 200, licencia, metadatos, enlaces bidireccionales y cero secretos.
 
+### [ ACTIVE ] GB-022 — Ajustes posteriores al cierre
+
+Ámbito: Frontend, AuthUser, Game y `GameBook.System`. Spec §10 y plan §3.7. Cierre del grupo: spec §10.5.
+
+| Estado y subtarea | Depende de | Entregable y comprobación |
+| --- | --- | --- |
+| [ ACTIVE ] **GB-022.01** — Aviso de fin en favoritos | GB-020 | Favoritos muestra «Personal shelf» y su texto de fin en EN/ES; el catálogo no cambia; pruebas unitaria y E2E; PR a `develop`. |
+| [ ACTIVE ] **GB-022.02** — Sincronizar `main → develop` y automatizarlo | GB-020 | PR `main → develop` fusionado en las tres aplicaciones; `release-please.yml` abre ese PR tras cada release (sin duplicarlo). |
+| [ NEW ] **GB-022.03** — Changelog sin duplicados | GB-022.02 | `merge_commit_message=BLANK` en las tres aplicaciones (verificado con `gh api`); `CHANGELOG.md` sin entradas repetidas; PR a `develop`. |
+| [ ACTIVE ] **GB-022.04** — Quitar el enlace al canvas | GB-020 | `specs/improvements.md` y la revisión lo mencionan sin enlace; sincronizado con `GameBook.System` por PR. |
+| [ NEW ] **GB-022.05** — Publicar y verificar | GB-022.01, GB-022.02, GB-022.03 | Promociones `develop → main`; la release de Frontend sale sin entradas repetidas y abre sola el PR `main → develop`. |
+
+#### GB-022 — Inicio
+
+- Aprobación: el autor aprobó spec §10 y el plan §3.7 el 2026-10-28, incluido el cambio de `merge_commit_message` en los tres repositorios.
+- Estado: GB-022.01, .02 y .04 `[ ACTIVE ]` (2026-10-28); su dependencia de grupo GB-020 está `[ RESOLVED ]`. GB-022.03 espera a GB-022.02 y GB-022.05 a .01–.03.
+- Ejecución: la coordinación hace GB-022.01 (ajuste del Frontend, sin Codex), las operaciones de Git, el cambio de configuración y GB-022.04. Codex (`gpt-6-luna`) escribe el paso de `release-please.yml` en cada aplicación (GB-022.02) y la limpieza de `CHANGELOG.md` (GB-022.03).
+- GB-022.01: `CollectionPagination` recibe el contexto y favoritos usa `favorites.endOfResults` con el rótulo «Personal shelf» / «Estantería personal». Pruebas unitarias: 37 archivos y 122 pruebas, incluida una nueva para favoritos en EN/ES. E2E: 8 pasan; el recorrido con sesión comprueba el aviso y que no aparece «Public catalog». `lint`, `typecheck` y Prettier en verde. PR Frontend #93.
+- GB-022.02: PR únicos `main → develop` (solo difieren manifiesto, `CHANGELOG.md` y la versión de `package.json`; se fusionan sin conflictos): Frontend #92, AuthUser #54 y Game #57. Codex añadió a `release-please.yml` el paso que abre el PR de sincronización cuando hay `release_created` y lo omite si ya hay uno abierto, y una frase en `docs/development*.md`. La coordinación unificó el paso en las tres aplicaciones y validó el YAML con js-yaml. PR Frontend #94, AuthUser #55 y Game #58.
+- GB-022.04: el canvas se menciona sin enlace en `specs/improvements.md` y en la revisión. Ningún Markdown público de los cuatro repositorios lo enlaza salvo las copias de System, que se actualizan por PR.
+
 ## 6. Registro de PR
 
 | Subtarea | Repositorio | PR | Origen → destino | Estado |
 | --- | --- | --- | --- | --- |
 | GB-020.10 | `GameBook.System` | [#12](https://github.com/CarlosSV923/GameBook.System/pull/12) | `feature/020-10/sdd-sync` → `main` | `MERGED` |
+| GB-022.01 | `GameBook.Frontend` | [#93](https://github.com/CarlosSV923/GameBook.Frontend/pull/93) | `feature/022-01/favorites-end-notice` → `develop` | `OPEN` |
+| GB-022.02 | `GameBook.Frontend` | [#92](https://github.com/CarlosSV923/GameBook.Frontend/pull/92) | `main` → `develop` (sincronización) | `OPEN` |
+| GB-022.02 | `GameBook.Microservice.AuthUser` | [#54](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/pull/54) | `main` → `develop` (sincronización) | `OPEN` |
+| GB-022.02 | `GameBook.Microservice.Game` | [#57](https://github.com/CarlosSV923/GameBook.Microservice.Game/pull/57) | `main` → `develop` (sincronización) | `OPEN` |
+| GB-022.02 | `GameBook.Frontend` | [#94](https://github.com/CarlosSV923/GameBook.Frontend/pull/94) | `feature/022-02/release-sync-pr` → `develop` | `OPEN` |
+| GB-022.02 | `GameBook.Microservice.AuthUser` | [#55](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/pull/55) | `feature/022-02/release-sync-pr` → `develop` | `OPEN` |
+| GB-022.02 | `GameBook.Microservice.Game` | [#58](https://github.com/CarlosSV923/GameBook.Microservice.Game/pull/58) | `feature/022-02/release-sync-pr` → `develop` | `OPEN` |
+| GB-020 (cierre) | `GameBook.System` | [#14](https://github.com/CarlosSV923/GameBook.System/pull/14) | `feature/020-close/final-task-state` → `main` (estado final de tareas) | `MERGED` |
 | GB-020.11 | `GameBook.Frontend` | [#91](https://github.com/CarlosSV923/GameBook.Frontend/pull/91) | `develop` → `main` (promoción) | `MERGED` |
 | GB-020.11 | `GameBook.System` | [#13](https://github.com/CarlosSV923/GameBook.System/pull/13) | `feature/020-11/main-flow-gif` → `main` | `MERGED` |
 | GB-020.11 | `GameBook.Frontend` | [#90](https://github.com/CarlosSV923/GameBook.Frontend/pull/90) | `feature/020-11/main-flow-gif` → `develop` | `MERGED` |

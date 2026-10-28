@@ -80,6 +80,14 @@ Ejecución: la coordinación implementa GB-021 sin Codex ni subagentes y usa `/d
 3. **README y docs** (uno por repo): estructura de spec §7.1, `docs/development.md` y `.es.md`, capturas desde `docs/screenshots/` (Frontend y System) y enlaces cruzados válidos.
 4. **Sincronización SDD:** `specs/plan/tasks/improvements.md` y `reviews/` se copian a `GameBook.System` por PR hacia `main`, y se verifica la entrega final de los cuatro repos.
 
+### 3.7 GB-022 — Ajustes posteriores al cierre (spec §10)
+
+1. **Fin de favoritos (Frontend):** `CollectionPagination` recibe el contexto y lo pasa a `CatalogState`; mensajes nuevos EN/ES; pruebas unitaria y E2E.
+2. **`main → develop` (las tres aplicaciones):** PR único de sincronización y un paso en `release-please.yml` que, cuando hay `release_created`, abre el PR `main → develop` con `gh` si no existe. Va antes del paso 3 para que `develop` tenga el `CHANGELOG.md` completo.
+3. **Changelog (las tres aplicaciones):** `gh repo edit` con `merge_commit_message=BLANK` (cambio de configuración aprobado en spec §10) y limpieza de las entradas duplicadas de `CHANGELOG.md` por PR a `develop`.
+4. **Canvas:** quitar el enlace en `specs/improvements.md` y en la revisión, y sincronizar con `GameBook.System`.
+5. **Publicación:** promoción `develop → main` de las tres aplicaciones. La versión de Frontend (`fix`) sirve para comprobar el changelog sin duplicados y el PR automático `main → develop`.
+
 ## 4. Ejecución con Codex
 
 La coordinación (Claude) asigna cada subtarea a Codex con el modelo `gpt-6-luna`, desde el repositorio dueño y con una sola subtarea por ejecución:
