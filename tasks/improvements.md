@@ -258,7 +258,7 @@ En «Depende de», `GB-014` es el grupo cerrado del MVP en `mvp.md`.
 
 ## 5. Documentación y publicación
 
-### [ ACTIVE ] GB-020 — Documentación, diagramas y metadatos
+### [ RESOLVED ] GB-020 — Documentación, diagramas y metadatos
 
 Ámbito: los cuatro repositorios. **Skill obligatorio `archify` 3.2** en `.02`–`.05`. Cierre del grupo: spec §7 y criterios 9–12.
 
@@ -273,8 +273,8 @@ En «Depende de», `GB-014` es el grupo cerrado del MVP en `mvp.md`.
 | [ RESOLVED ] **GB-020.07** — README y docs de AuthUser | GB-020.03 | Mismos criterios, sin capturas de UI; Swagger como demo. |
 | [ RESOLVED ] **GB-020.08** — README y docs de Game | GB-020.04 | Mismos criterios, sin capturas de UI; Swagger como demo. |
 | [ RESOLVED ] **GB-020.09** — README de GameBook.System | GB-020.05, GB-020.06 | README EN/ES reducido según spec §7.1, con capturas del Frontend, diagrama general y Compose resumido. |
-| [ ACTIVE ] **GB-020.10** — Sincronizar SDD y verificar entrega | GB-020.07, GB-020.08, GB-020.09 | `specs/plan/tasks/improvements.md` y `reviews/` publicados en `GameBook.System` por PR; cuatro repos verificados (README, Pages HTTP 200, licencia, metadatos, enlaces bidireccionales, cero secretos). |
-| [ ACTIVE ] **GB-020.11** — Regenerar el GIF del flujo principal | GB-020.06, GB-020.09 | `pnpm screenshots` genera un GIF del flujo completo (spec §7.1, enmienda 2026-10-28): cada paso dura ≥ 2 s, se captura tras las animaciones y tiene paleta propia por fotograma. Se copia a `GameBook.System/docs/screenshots/en/` y se revisan los fotogramas. |
+| [ RESOLVED ] **GB-020.10** — Sincronizar SDD y verificar entrega | GB-020.07, GB-020.08, GB-020.09 | `specs/plan/tasks/improvements.md` y `reviews/` publicados en `GameBook.System` por PR; cuatro repos verificados (README, Pages HTTP 200, licencia, metadatos, enlaces bidireccionales, cero secretos). |
+| [ RESOLVED ] **GB-020.11** — Regenerar el GIF del flujo principal | GB-020.06, GB-020.09 | `pnpm screenshots` genera un GIF del flujo completo (spec §7.1, enmienda 2026-10-28): cada paso dura ≥ 2 s, se captura tras las animaciones y tiene paleta propia por fotograma. Se copia a `GameBook.System/docs/screenshots/en/` y se revisan los fotogramas. |
 
 #### GB-020.01–.04 — Inicio
 
@@ -309,16 +309,29 @@ En «Depende de», `GB-014` es el grupo cerrado del MVP en `mvp.md`.
 #### GB-020.11 — Inicio
 
 - Estado: `[ ACTIVE ]` (2026-10-28), a petición del autor: el GIF era muy corto (3 fotogramas de 0,8 s), el modal se capturaba a medio abrir y la paleta única degradaba los fotogramas oscuros. Dependencias GB-020.06 y GB-020.09 verificadas `[ RESOLVED ]`. La coordinación lo implementa sin Codex, en la rama Frontend `feature/020-11/main-flow-gif` desde `develop` (`385ddf4`). La copia a System se hará en un PR aparte hacia `main`, cuando termine GB-020.10.
+- Implementación (2026-10-28): una prueba propia de `pnpm screenshots` graba el GIF a 1280×800 con 8 pasos de 2,5–4 s (bucle de 23,5 s): catálogo, cuadrícula de pósters, detalle abierto, aviso sin sesión, formulario de inicio de sesión, confirmación de guardado, ficha guardada y favoritos. Cada paso se captura cuando terminan las fuentes, las imágenes visibles y las animaciones finitas. Cada fotograma lleva su propia paleta y difuminado Floyd–Steinberg. Pesa 560 KB (antes, 178 KB y 2,4 s). Se revisaron los 8 fotogramas muestreando el GIF en reproducción. `typecheck`, `lint` y Prettier en verde. PR Frontend #90 → `develop` y System #13 → `main` (copia idéntica byte a byte).
+- Fusionados y verificados (2026-10-28): #90 en `develop` (`5b6e978`, CI en verde) y #13 en `main` de System (`702c443`); el GIF servido desde `main` de System es idéntico al del Frontend (571.701 bytes). El README del Frontend muestra el GIF de `main`, así que se abrió la promoción #91. GB-020.11 se cierra cuando se fusione.
+- Cierre GB-020.11: `[ RESOLVED ]` (2026-10-28). La promoción #91 está fusionada en `main` del Frontend (`8823630`) y Vercel desplegó en producción sobre ese commit (`success`). release-please no abrió versión. El GIF servido desde `main` del Frontend es idéntico al de System (571.701 bytes).
+
+#### GB-020 — Cierre del grupo y de la fase
+
+- Estado: `[ RESOLVED ]` (2026-10-28). GB-020.01–.11 están `[ RESOLVED ]` y cumplen spec §7 y los criterios 9–12 de §9: README EN/ES con la estructura de §7.1 y `docs/development*.md` en los cuatro repositorios (9); descripción, topics, homepage y MIT verificados (10); diagramas Archify 3.2 publicados en Pages, con SVG EN/ES en los README y ningún recibo `visual-check`/`delivery` en `architecture/` de `main` en los cuatro repositorios (11); y `specs/`, `plan/` y `tasks/` de la fase en `GameBook.System` (12), con este estado final sincronizado por PR.
+- Con GB-015–GB-021 en `[ RESOLVED ]`, la fase de mejoras queda completa. Versiones finales: Frontend v0.12.0, AuthUser v0.4.0 y Game v0.4.0.
 
 #### GB-020.10 — Inicio
 
+- Resultado (2026-10-28): Codex verificó los cuatro repositorios en `main`. Los README EN/ES se enlazan entre sí y con System, GitHub detecta MIT, los metadatos coinciden con spec §7.2, Pages y los 41 enlaces externos distintos responden HTTP 200, los enlaces relativos resuelven y no hay secretos (las URL PostgreSQL con contraseña son solo valores locales en pruebas, `.env.example` y `compose.yaml`). Su sincronización pasó Prettier por las copias, lo que renumeró una lista del plan y rompía referencias como «plan §3.3 paso 8»; la coordinación las volvió a copiar sin cambios desde el workspace (sus enlaces relativos ya resuelven en System) y aplicó solo la enmienda GB-016.03 a `contracts/igdb-mapping.md`. PR System #12 → `main`.
+- Cierre GB-020.10: `[ RESOLVED ]` (2026-10-28). #12 fusionado por el autor en `main` de System (`4e73758`); `specs/`, `plan/` y `tasks/improvements.md` y `reviews/` están publicados allí. La copia de `tasks/improvements.md` en System refleja el estado previo a este cierre; el estado final se sincronizará con el cierre del grupo GB-020.
 - Estado: `[ ACTIVE ]` (2026-10-28). Dependencias GB-020.07, GB-020.08 y GB-020.09 verificadas `[ RESOLVED ]`. Rama `feature/020-10/sdd-sync` desde `main` de System. Ejecución con Codex (`gpt-6-luna`). Parte A: copia de `specs/plan/tasks/improvements.md` y `reviews/`, con los enlaces adaptados al repositorio público como en GB-014 y la enmienda GB-016.03 de `contracts/igdb-mapping.md`; no se sobrescriben los archivos MVP ni `AGENTS.md`/`CLAUDE.md`, que se adaptaron al publicarse. Parte B: verificación de la entrega en los cuatro repositorios (puerta I): README, Pages HTTP 200, licencia, metadatos, enlaces bidireccionales y cero secretos.
 
 ## 6. Registro de PR
 
 | Subtarea | Repositorio | PR | Origen → destino | Estado |
 | --- | --- | --- | --- | --- |
-| GB-020.11 | `GameBook.Frontend` | [#90](https://github.com/CarlosSV923/GameBook.Frontend/pull/90) | `feature/020-11/main-flow-gif` → `develop` | `OPEN` |
+| GB-020.10 | `GameBook.System` | [#12](https://github.com/CarlosSV923/GameBook.System/pull/12) | `feature/020-10/sdd-sync` → `main` | `MERGED` |
+| GB-020.11 | `GameBook.Frontend` | [#91](https://github.com/CarlosSV923/GameBook.Frontend/pull/91) | `develop` → `main` (promoción) | `MERGED` |
+| GB-020.11 | `GameBook.System` | [#13](https://github.com/CarlosSV923/GameBook.System/pull/13) | `feature/020-11/main-flow-gif` → `main` | `MERGED` |
+| GB-020.11 | `GameBook.Frontend` | [#90](https://github.com/CarlosSV923/GameBook.Frontend/pull/90) | `feature/020-11/main-flow-gif` → `develop` | `MERGED` |
 | GB-020.10 | `GameBook.Frontend` | [#89](https://github.com/CarlosSV923/GameBook.Frontend/pull/89) | `develop` → `main` (promoción) | `OPEN` |
 | GB-020.10 | `GameBook.Microservice.AuthUser` | [#53](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/pull/53) | `develop` → `main` (promoción) | `OPEN` |
 | GB-020.10 | `GameBook.Microservice.Game` | [#56](https://github.com/CarlosSV923/GameBook.Microservice.Game/pull/56) | `develop` → `main` (promoción) | `OPEN` |
