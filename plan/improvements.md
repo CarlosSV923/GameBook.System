@@ -84,7 +84,7 @@ Ejecución: la coordinación implementa GB-021 sin Codex ni subagentes y usa `/d
 
 1. **Fin de favoritos (Frontend):** `CollectionPagination` recibe el contexto y lo pasa a `CatalogState`; mensajes nuevos EN/ES; pruebas unitaria y E2E.
 2. **`main → develop` (las tres aplicaciones):** PR único de sincronización y un paso en `release-please.yml` que, cuando hay `release_created`, abre el PR `main → develop` con `gh` si no existe. Va antes del paso 3 para que `develop` tenga el `CHANGELOG.md` completo.
-3. **Changelog (las tres aplicaciones):** `gh repo edit` con `merge_commit_message=BLANK` (cambio de configuración aprobado en spec §10) y limpieza de las entradas duplicadas de `CHANGELOG.md` por PR a `develop`.
+3. **Changelog (las tres aplicaciones):** limpieza de las entradas duplicadas de `CHANGELOG.md` y la regla de merge (spec §10.3: «Rebase and merge» para funcionalidades, merge commit para promociones y sincronizaciones) en `docs/development*.md`, por PR a `develop` que se fusiona ya con «Rebase and merge».
 4. **Canvas:** quitar el enlace en `specs/improvements.md` y en la revisión, y sincronizar con `GameBook.System`.
 5. **Publicación:** promoción `develop → main` de las tres aplicaciones. La versión de Frontend (`fix`) sirve para comprobar el changelog sin duplicados y el PR automático `main → develop`.
 
