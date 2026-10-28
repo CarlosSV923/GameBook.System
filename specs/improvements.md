@@ -19,7 +19,7 @@ Fuera del §2, la fase **no añade funcionalidades ni cambia contratos HTTP**. R
 
 ## 3. Rediseño visual: dirección A «Archive Refined»
 
-El autor eligió la dirección A del [canvas de propuestas](https://claude.ai/artifact/8pSb2nDSPc4WXptsj1qdWc). Evoluciona la identidad aprobada en `GB-006` («archivo de juegos / guía de campo») sin sustituirla. Se aplica con el skill `interface-design`.
+El autor eligió la dirección A del canvas de propuestas de diseño (privado, no publicado). Evoluciona la identidad aprobada en `GB-006` («archivo de juegos / guía de campo») sin sustituirla. Se aplica con el skill `interface-design`.
 
 - **Tira de índice obligatoria:** cada ficha del catálogo y de favoritos muestra una franja lateral con posición en el listado, puntuación, año y plataformas. La misma tira, a otra escala, aparece en el detalle y en los estados de carga, vacío y error.
 - **Enmienda 2026-10-27 (decisión del autor tras revisar producción): fichas de la opción B.** Las fichas de catálogo y favoritos dejan de usar la tira de índice lateral y la portada 4:3, que generaban grandes espacios en blanco con listas largas de plataformas y recortaban los pósters. Pasan a ser pósters de proporción 3:4 sin recorte relevante, con la puntuación 0–100 en una etiqueta sobre la portada, el título (hasta dos líneas) y una línea «año · plataformas» truncada, más la acción de favoritos al lado del título, como en el artboard B «Spotlight Shelf» del canvas. Las filas de la cuadrícula tienen altura uniforme. Se mantienen sin cambios los colores, la tipografía, la cabecera, el hero, la barra de filtros, el modal de detalle (que conserva la tira en su variante de detalle) y el resto de la dirección A. La posición en el listado no se muestra en las fichas. Prevalece sobre el punto anterior en lo que respecta a las fichas.
@@ -143,3 +143,11 @@ Los cuatro repositorios incluyen `LICENSE` MIT con el titular «Carlos Sesme Ver
 10. Los cuatro repositorios tienen descripción, topics, homepage correcta y licencia MIT.
 11. Los diagramas Archify 3.2 de §7.4 están publicados en Pages, con SVG EN/ES en los README y sin recibos `visual-check` versionados.
 12. `specs/`, `plan/` y `tasks/` de esta fase están sincronizados en `GameBook.System`.
+
+## 10. Ajustes posteriores al cierre (2026-10-28, decisión del autor)
+
+1. **Fin de favoritos.** Al llegar al final de la lista de favoritos, el aviso usa el contexto de favoritos: rótulo «Personal shelf» / «Estantería personal» y texto «You have reached the end of your favorites.» / «Has llegado al final de tus favoritos.». El catálogo mantiene su aviso actual.
+2. **`develop` al día con `main`.** Las tres aplicaciones incorporan a `develop` los commits de release de `main` (versión, `CHANGELOG.md`, manifiesto) mediante un PR `main → develop` fusionado con merge commit. A partir de entonces, el workflow de release-please abre ese PR automáticamente cada vez que publica una versión, si no hay ya uno abierto.
+3. **Changelog sin duplicados.** Los merge commits ya no repiten el título del PR en su cuerpo: en las tres aplicaciones, el mensaje del merge commit pasa a estar vacío (`merge_commit_message: BLANK`), así que release-please solo cuenta el commit original. Se eliminan de `CHANGELOG.md` las entradas que repetían un commit a través de su merge. Las notas de las releases ya publicadas en GitHub no se modifican.
+4. **Canvas de propuestas.** El canvas de diseño es privado y no se publica. `specs/improvements.md` y la revisión lo mencionan sin enlazarlo, y el cambio se sincroniza con `GameBook.System`.
+5. **Criterios.** (a) Favoritos muestra su propio aviso de fin en EN/ES, con prueba unitaria y E2E. (b) Tras la siguiente release de cada aplicación, `develop` contiene sus commits de release y el changelog nuevo no tiene entradas repetidas. (c) Ningún archivo público enlaza el canvas.

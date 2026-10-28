@@ -2,7 +2,7 @@
 
 Revisión de solo lectura de los cuatro repositorios (`origin/develop` de las aplicaciones y `main` de `GameBook.System`) y del despliegue productivo. No se modificó código. Este documento es la entrada para `specs/improvements.md`, `plan/improvements.md` y `tasks/improvements.md`.
 
-Propuestas visuales: [canvas «GameBook Redesign Proposals»](https://claude.ai/artifact/8pSb2nDSPc4WXptsj1qdWc) (privado hasta compartirlo).
+Propuestas visuales: canvas «GameBook Redesign Proposals» (privado, no publicado).
 
 ## 1. Estética del Frontend
 
