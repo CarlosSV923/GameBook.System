@@ -24,7 +24,7 @@ El artefacto Archify validado en español para la topología final de las aplica
 
 - [Diagrama de arquitectura](https://carlossv923.github.io/GameBook.System/GameBook.System-architecture-es.html)
 
-![Arquitectura oscura del sistema GameBook](architecture/GameBook.System-architecture-es.visual-check.1440x900.dark.png)
+![Arquitectura oscura del sistema GameBook](architecture/GameBook.System-architecture-es.svg)
 
 El diagrama muestra el frontend, AuthUser, Game, Neon/PostgreSQL, OAuth de Twitch, IGDB, la validación de JWT/sesión y las relaciones principales entre ellos. Las etiquetas propias están traducidas al español; los controles fijos del visor Archify permanecen en inglés.
 

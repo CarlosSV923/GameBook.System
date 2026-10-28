@@ -24,7 +24,7 @@ The validated English Archify artifact for the final application topology is pre
 
 - [Architecture diagram](https://carlossv923.github.io/GameBook.System/GameBook.System-architecture-en.html)
 
-![Dark GameBook system architecture](architecture/GameBook.System-architecture-en.visual-check.1440x900.dark.png)
+![Dark GameBook system architecture](architecture/GameBook.System-architecture-en.svg)
 
 The diagram shows the frontend, AuthUser, Game, Neon/PostgreSQL, Twitch OAuth, IGDB, JWT/session validation, and the main relationships between them. Archify's fixed viewer controls remain in English.
 

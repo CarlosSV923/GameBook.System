@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="description"
+      content="Architecture diagrams for the GameBook system in English and Spanish."
+    />
+    <title>GameBook.System architecture</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: system-ui, sans-serif;
+        line-height: 1.55;
+        --page: #f6f4ee;
+        --surface: #fffefa;
+        --ink: #242823;
+        --muted: #565e57;
+        --line: #d1d4cb;
+        --link: #075f58;
+        --focus: #9c461f;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --page: #171b19;
+          --surface: #222925;
+          --ink: #eef1e9;
+          --muted: #c0c9bf;
+          --line: #45514a;
+          --link: #8ed6c8;
+          --focus: #ffad79;
+        }
+      }
+      body {
+        max-width: 48rem;
+        margin: 3rem auto;
+        padding: 0 1.25rem;
+        background: var(--page);
+        color: var(--ink);
+      }
+      h1,
+      h2 {
+        line-height: 1.2;
+      }
+      section {
+        margin-block: 2rem;
+        padding: 1.25rem 1.5rem;
+        border: 1px solid var(--line);
+        border-radius: 0.75rem;
+        background: var(--surface);
+      }
+      ul {
+        padding-inline-start: 1.4rem;
+      }
+      li + li {
+        margin-block-start: 0.45rem;
+      }
+      a {
+        color: var(--link);
+        text-underline-offset: 0.18em;
+      }
+      a:focus-visible {
+        outline: 3px solid var(--focus);
+        outline-offset: 3px;
+        border-radius: 2px;
+      }
+      .muted {
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>GameBook.System architecture</h1>
+      <p class="muted">System overview and architecture indexes for the application repositories.</p>
+
+      <section aria-labelledby="system-diagram">
+        <h2 id="system-diagram">System diagram · English</h2>
+        <ul>
+          <li><a href="GameBook.System-architecture-en.html">Explore the GameBook system architecture (English)</a></li>
+          <li><a href="GameBook.System-architecture-es.html" lang="es">Explorar la arquitectura del sistema GameBook (español)</a></li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="application-diagrams">
+        <h2 id="application-diagrams">Application architecture indexes</h2>
+        <ul>
+          <li><a href="https://carlossv923.github.io/GameBook.Frontend/">GameBook Frontend</a></li>
+          <li><a href="https://carlossv923.github.io/GameBook.Microservice.AuthUser/">GameBook AuthUser</a></li>
+          <li><a href="https://carlossv923.github.io/GameBook.Microservice.Game/">GameBook Game</a></li>
+        </ul>
+      </section>
+
+      <section lang="es" aria-labelledby="indice-es">
+        <h2 id="indice-es">Arquitectura de GameBook.System</h2>
+        <p>Vista general del sistema e índices de arquitectura de los repositorios de aplicaciones.</p>
+        <ul>
+          <li><a href="GameBook.System-architecture-es.html">Explorar la arquitectura del sistema GameBook (español)</a></li>
+          <li><a href="GameBook.System-architecture-en.html" lang="en">Explore the GameBook system architecture (English)</a></li>
+        </ul>
+        <h3>Índices de arquitectura de las aplicaciones</h3>
+        <ul>
+          <li><a href="https://carlossv923.github.io/GameBook.Frontend/">GameBook Frontend</a></li>
+          <li><a href="https://carlossv923.github.io/GameBook.Microservice.AuthUser/">GameBook AuthUser</a></li>
+          <li><a href="https://carlossv923.github.io/GameBook.Microservice.Game/">GameBook Game</a></li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
